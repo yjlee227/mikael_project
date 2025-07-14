@@ -1,0 +1,9 @@
+{
+  "myrealtrip": {
+    "last_update": "2025-07-14 16:06:37",
+    "product_count": 2,
+    "status": "success",
+    "csv_path": "myrealtrip_products.csv",
+    "image_path": "myrealtripthumb_img"
+  }
+}

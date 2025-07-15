@@ -1,6 +1,6 @@
 {
-  "version": "2.0",
-  "last_updated": "2025-07-15 22:06:43",
+  "version": "3.0",
+  "last_updated": "2025-07-16 00:11:21",
   "cities": {
     "방콕": {
       "code": "BKK",
@@ -9,13 +9,13 @@
     },
     "치앙마이": {
       "code": "CNX",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "태국"
     },
     "푸켓": {
       "code": "HKT",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "태국"
     },
     "싱가포르": {
       "code": "SIN",
@@ -29,23 +29,98 @@
     },
     "쿠알라룸푸르": {
       "code": "KUL",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "말레이시아"
     },
     "세부": {
       "code": "CEB",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "필리핀"
     },
     "다낭": {
       "code": "DAD",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "베트남"
     },
     "호치민": {
       "code": "SGN",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "베트남"
+    },
+    "푸꾸옥": {
+      "code": "PQC",
+      "continent": "아시아",
+      "country": "베트남"
+    },
+    "나트랑": {
+      "code": "CXR",
+      "continent": "아시아",
+      "country": "베트남"
+    },
+    "보홀": {
+      "code": "TAG",
+      "continent": "아시아",
+      "country": "필리핀"
+    },
+    "랑카위": {
+      "code": "LGK",
+      "continent": "아시아",
+      "country": "말레이시아"
+    },
+    "마닐라": {
+      "code": "MNL",
+      "continent": "아시아",
+      "country": "필리핀"
+    },
+    "발리": {
+      "code": "DPS",
+      "continent": "아시아",
+      "country": "인도네시아"
+    },
+    "하노이": {
+      "code": "HAN",
+      "continent": "아시아",
+      "country": "베트남"
+    },
+    "호이안": {
+      "code": "DAD",
+      "continent": "아시아",
+      "country": "베트남"
+    },
+    "달랏": {
+      "code": "DLI",
+      "continent": "아시아",
+      "country": "베트남"
+    },
+    "코타키나발루": {
+      "code": "BKI",
+      "continent": "아시아",
+      "country": "말레이시아"
+    },
+    "페낭": {
+      "code": "PEN",
+      "continent": "아시아",
+      "country": "말레이시아"
+    },
+    "시엠립": {
+      "code": "REP",
+      "continent": "아시아",
+      "country": "캄보디아"
+    },
+    "비엔티안": {
+      "code": "VTE",
+      "continent": "아시아",
+      "country": "라오스"
+    },
+    "루앙프라방": {
+      "code": "LPQ",
+      "continent": "아시아",
+      "country": "라오스"
+    },
+    "크라비": {
+      "code": "KBV",
+      "continent": "아시아",
+      "country": "태국"
     },
     "도쿄": {
       "code": "NRT",
@@ -59,53 +134,88 @@
     },
     "나고야": {
       "code": "NGO",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "일본"
     },
     "후쿠오카": {
       "code": "FUK",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "일본"
     },
     "오키나와": {
       "code": "OKA",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "일본"
     },
     "삿포로": {
       "code": "CTS",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "일본"
+    },
+    "교토": {
+      "code": "KIX",
+      "continent": "아시아",
+      "country": "일본"
+    },
+    "타이베이": {
+      "code": "TPE",
+      "continent": "아시아",
+      "country": "대만"
+    },
+    "상하이": {
+      "code": "PVG",
+      "continent": "아시아",
+      "country": "중국"
+    },
+    "베이징": {
+      "code": "PEK",
+      "continent": "아시아",
+      "country": "중국"
+    },
+    "마카오": {
+      "code": "MFM",
+      "continent": "아시아",
+      "country": "마카오"
     },
     "서울": {
-      "code": "SEL",
-      "continent": "기타",
-      "country": "기타"
+      "code": "ICN",
+      "continent": "아시아",
+      "country": "대한민국"
     },
     "부산": {
       "code": "PUS",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "대한민국"
     },
     "제주": {
       "code": "CJU",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "대한민국"
     },
     "대구": {
       "code": "TAE",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "대한민국"
     },
     "광주": {
       "code": "KWJ",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "대한민국"
     },
     "여수": {
       "code": "RSU",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "아시아",
+      "country": "대한민국"
+    },
+    "인천": {
+      "code": "ICN",
+      "continent": "아시아",
+      "country": "대한민국"
+    },
+    "김포": {
+      "code": "GMP",
+      "continent": "아시아",
+      "country": "대한민국"
     },
     "파리": {
       "code": "CDG",
@@ -119,13 +229,58 @@
     },
     "로마": {
       "code": "FCO",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "유럽",
+      "country": "이탈리아"
     },
     "바르셀로나": {
       "code": "BCN",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "유럽",
+      "country": "스페인"
+    },
+    "프라하": {
+      "code": "PRG",
+      "continent": "유럽",
+      "country": "체코"
+    },
+    "비엔나": {
+      "code": "VIE",
+      "continent": "유럽",
+      "country": "오스트리아"
+    },
+    "취리히": {
+      "code": "ZRH",
+      "continent": "유럽",
+      "country": "스위스"
+    },
+    "암스테르담": {
+      "code": "AMS",
+      "continent": "유럽",
+      "country": "네덜란드"
+    },
+    "마드리드": {
+      "code": "MAD",
+      "continent": "유럽",
+      "country": "스페인"
+    },
+    "인터라켄": {
+      "code": "ZRH",
+      "continent": "유럽",
+      "country": "스위스"
+    },
+    "뮌헨": {
+      "code": "MUC",
+      "continent": "유럽",
+      "country": "독일"
+    },
+    "부다페스트": {
+      "code": "BUD",
+      "continent": "유럽",
+      "country": "헝가리"
+    },
+    "피렌체": {
+      "code": "FLR",
+      "continent": "유럽",
+      "country": "이탈리아"
     },
     "뉴욕": {
       "code": "JFK",
@@ -134,13 +289,58 @@
     },
     "로스앤젤레스": {
       "code": "LAX",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "북미",
+      "country": "미국"
     },
     "시카고": {
       "code": "ORD",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "북미",
+      "country": "미국"
+    },
+    "하와이": {
+      "code": "HNL",
+      "continent": "북미",
+      "country": "미국"
+    },
+    "샌프란시스코": {
+      "code": "SFO",
+      "continent": "북미",
+      "country": "미국"
+    },
+    "라스베이거스": {
+      "code": "LAS",
+      "continent": "북미",
+      "country": "미국"
+    },
+    "밴쿠버": {
+      "code": "YVR",
+      "continent": "북미",
+      "country": "캐나다"
+    },
+    "워싱턴 D.C.": {
+      "code": "IAD",
+      "continent": "북미",
+      "country": "미국"
+    },
+    "보스턴": {
+      "code": "BOS",
+      "continent": "북미",
+      "country": "미국"
+    },
+    "시애틀": {
+      "code": "SEA",
+      "continent": "북미",
+      "country": "미국"
+    },
+    "토론토": {
+      "code": "YYZ",
+      "continent": "북미",
+      "country": "캐나다"
+    },
+    "칸쿤": {
+      "code": "CUN",
+      "continent": "북미",
+      "country": "멕시코"
     },
     "시드니": {
       "code": "SYD",
@@ -149,59 +349,29 @@
     },
     "멜버른": {
       "code": "MEL",
-      "continent": "기타",
-      "country": "기타"
-    },
-    "교토": {
-      "code": "KIX",
-      "continent": "기타",
-      "country": "기타"
-    },
-    "인천": {
-      "code": "ICN",
-      "continent": "기타",
-      "country": "기타"
-    },
-    "김포": {
-      "code": "GMP",
-      "continent": "기타",
-      "country": "기타"
-    },
-    "하와이": {
-      "code": "HNL",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "오세아니아",
+      "country": "호주"
     },
     "괌": {
       "code": "GUM",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "오세아니아",
+      "country": "괌"
     },
     "사이판": {
       "code": "SPN",
-      "continent": "기타",
-      "country": "기타"
+      "continent": "오세아니아",
+      "country": "북마리아나 제도"
     },
-    "푸꾸옥": {
-      "code": "PQC",
-      "continent": "기타",
-      "country": "기타"
+    "오클랜드": {
+      "code": "AKL",
+      "continent": "오세아니아",
+      "country": "뉴질랜드"
     },
-    "나트랑": {
-      "code": "CXR",
-      "continent": "기타",
-      "country": "기타"
-    },
-    "보홀": {
-      "code": "TAG",
-      "continent": "기타",
-      "country": "기타"
-    },
-    "랑카위": {
-      "code": "LGK",
-      "continent": "기타",
-      "country": "기타"
+    "두바이": {
+      "code": "DXB",
+      "continent": "아시아",
+      "country": "아랍에미리트"
     }
   },
-  "total_cities": 40
+  "total_cities": 74
 }

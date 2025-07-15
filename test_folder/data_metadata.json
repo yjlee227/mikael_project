@@ -1,9 +1,9 @@
 {
   "myrealtrip": {
-    "last_update": "2025-07-15 17:33:58",
+    "last_update": "2025-07-16 00:32:35",
     "product_count": 2,
     "status": "success",
-    "csv_path": "myrealtrip_후쿠오카_products_2개_20250715_173358.csv",
-    "city": "후쿠오카"
+    "csv_path": "myrealtrip_products.csv",
+    "image_path": "myrealtripthumb_img"
   }
 }

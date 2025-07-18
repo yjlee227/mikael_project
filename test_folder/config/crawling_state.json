@@ -1,0 +1,149 @@
+{
+  "mission_info": {
+    "mission_start": "2025-07-17 23:36:26",
+    "last_update": "2025-07-18 00:25:15",
+    "version": "1.0",
+    "status": "active",
+    "description": "절대 멈추지 않는 지능형 크롤러"
+  },
+  "progress": {
+    "total_collected_count": 9,
+    "last_worked_page": 1,
+    "current_city": "푸켓",
+    "completed_urls": [
+      "https://experiences.myrealtrip.com/products/test1",
+      "https://experiences.myrealtrip.com/products/test2",
+      "https://experiences.myrealtrip.com/products/test3"
+    ],
+    "failed_urls": [
+      {
+        "url": "https://test-fail.com",
+        "error": "타임아웃 오류",
+        "timestamp": "2025-07-17 23:36:26",
+        "city": "푸켓"
+      },
+      {
+        "url": "https://www.myrealtrip.com/experiences/",
+        "error": "Message: target frame detached\n  (failed to check if window was closed: disconnected: Unable to receive message from renderer)\n  (Session info: chrome=138.0.7204.157)\nStacktrace:\n\tGetHandleVerifier [0x0x911a33+62339]\n\tGetHandleVerifier [0x0x911a74+62404]\n\t(No symbol) [0x0x751f80]\n\t(No symbol) [0x0x742b70]\n\t(No symbol) [0x0x741ce1]\n\t(No symbol) [0x0x75f8f2]\n\t(No symbol) [0x0x7c5cbc]\n\t(No symbol) [0x0x7e0089]\n\t(No symbol) [0x0x7bf1b6]\n\t(No symbol) [0x0x78e7a2]\n\t(No symbol) [0x0x78f644]\n\tGetHandleVerifier [0x0xb865c3+2637587]\n\tGetHandleVerifier [0x0xb819ca+2618138]\n\tGetHandleVerifier [0x0x9384aa+220666]\n\tGetHandleVerifier [0x0x9288d8+156200]\n\tGetHandleVerifier [0x0x92f06d+182717]\n\tGetHandleVerifier [0x0x919978+94920]\n\tGetHandleVerifier [0x0x919b02+95314]\n\tGetHandleVerifier [0x0x904c4a+9626]\n\tBaseThreadInitThunk [0x0x773c5d49+25]\n\tRtlInitializeExceptionChain [0x0x7767d1ab+107]\n\tRtlGetAppContainerNamedObjectPath [0x0x7767d131+561]\n",
+        "timestamp": "2025-07-17 23:39:28",
+        "city": "푸켓"
+      },
+      {
+        "url": "https://test-fail.com",
+        "error": "타임아웃 오류",
+        "timestamp": "2025-07-18 00:00:41",
+        "city": "푸켓"
+      },
+      {
+        "url": "https://test-fail.com",
+        "error": "타임아웃 오류",
+        "timestamp": "2025-07-18 00:25:15",
+        "city": "푸켓"
+      }
+    ],
+    "current_session_count": 3
+  },
+  "cities": {
+    "푸켓": {
+      "total_products": 9,
+      "first_started": "2025-07-17 23:36:26",
+      "last_session": "2025-07-18 00:25:15",
+      "completed_urls": [
+        "https://experiences.myrealtrip.com/products/test1",
+        "https://experiences.myrealtrip.com/products/test2",
+        "https://experiences.myrealtrip.com/products/test3"
+      ],
+      "failed_urls": [
+        {
+          "url": "https://test-fail.com",
+          "error": "타임아웃 오류",
+          "timestamp": "2025-07-17 23:36:26",
+          "city": "푸켓"
+        },
+        {
+          "url": "https://www.myrealtrip.com/experiences/",
+          "error": "Message: target frame detached\n  (failed to check if window was closed: disconnected: Unable to receive message from renderer)\n  (Session info: chrome=138.0.7204.157)\nStacktrace:\n\tGetHandleVerifier [0x0x911a33+62339]\n\tGetHandleVerifier [0x0x911a74+62404]\n\t(No symbol) [0x0x751f80]\n\t(No symbol) [0x0x742b70]\n\t(No symbol) [0x0x741ce1]\n\t(No symbol) [0x0x75f8f2]\n\t(No symbol) [0x0x7c5cbc]\n\t(No symbol) [0x0x7e0089]\n\t(No symbol) [0x0x7bf1b6]\n\t(No symbol) [0x0x78e7a2]\n\t(No symbol) [0x0x78f644]\n\tGetHandleVerifier [0x0xb865c3+2637587]\n\tGetHandleVerifier [0x0xb819ca+2618138]\n\tGetHandleVerifier [0x0x9384aa+220666]\n\tGetHandleVerifier [0x0x9288d8+156200]\n\tGetHandleVerifier [0x0x92f06d+182717]\n\tGetHandleVerifier [0x0x919978+94920]\n\tGetHandleVerifier [0x0x919b02+95314]\n\tGetHandleVerifier [0x0x904c4a+9626]\n\tBaseThreadInitThunk [0x0x773c5d49+25]\n\tRtlInitializeExceptionChain [0x0x7767d1ab+107]\n\tRtlGetAppContainerNamedObjectPath [0x0x7767d131+561]\n",
+          "timestamp": "2025-07-17 23:39:28",
+          "city": "푸켓"
+        },
+        {
+          "url": "https://test-fail.com",
+          "error": "타임아웃 오류",
+          "timestamp": "2025-07-18 00:00:41",
+          "city": "푸켓"
+        },
+        {
+          "url": "https://test-fail.com",
+          "error": "타임아웃 오류",
+          "timestamp": "2025-07-18 00:25:15",
+          "city": "푸켓"
+        }
+      ],
+      "pages_completed": [
+        {
+          "page": 1,
+          "products": 3,
+          "completed_at": "2025-07-17 23:36:26",
+          "session_id": "session_20250717_233626"
+        },
+        {
+          "page": 1,
+          "products": 3,
+          "completed_at": "2025-07-18 00:00:41",
+          "session_id": "session_20250718_000041"
+        },
+        {
+          "page": 1,
+          "products": 3,
+          "completed_at": "2025-07-18 00:25:15",
+          "session_id": "session_20250718_002515"
+        }
+      ],
+      "status": "resumed",
+      "sessions": [
+        {
+          "session_id": "session_20250717_233626",
+          "products": 0,
+          "pages": 0,
+          "duration": "2025-07-17 23:36:26"
+        }
+      ],
+      "completed_at": "2025-07-17 23:39:28"
+    }
+  },
+  "statistics": {
+    "total_sessions": 1,
+    "total_errors": 4,
+    "total_pages_completed": 3,
+    "average_per_page": 3.0,
+    "success_rate": 0.6,
+    "last_restart_count": 3
+  },
+  "current_session": {
+    "session_start": "2025-07-18 00:25:15",
+    "session_id": "session_20250718_002515",
+    "products_this_session": 3,
+    "pages_this_session": 1,
+    "target_city": "푸켓"
+  },
+  "browser_restarts": [
+    {
+      "timestamp": "2025-07-17 23:36:26",
+      "reason": "테스트 재시작",
+      "products_before_restart": 3,
+      "city": "푸켓"
+    },
+    {
+      "timestamp": "2025-07-18 00:00:41",
+      "reason": "테스트 재시작",
+      "products_before_restart": 3,
+      "city": "푸켓"
+    },
+    {
+      "timestamp": "2025-07-18 00:25:15",
+      "reason": "테스트 재시작",
+      "products_before_restart": 3,
+      "city": "푸켓"
+    }
+  ]
+}

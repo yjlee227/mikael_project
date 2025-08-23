@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)",
+      "Bash(awk:*)",
+      "Bash(grep:*)",
+      "Bash(jupyter notebook:*)",
+      "Bash(python:*)",
+      "Bash(mkdir:*)",
+      "Bash(pip install:*)",
+      "Bash(cp:*)"
+    ],
+    "deny": [],
+    "additionalDirectories": [
+      "/mnt/c/Users/redsk/OneDrive"
+    ]
+  }
+}

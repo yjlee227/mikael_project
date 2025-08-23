@@ -1,0 +1,46 @@
+{
+  "city_name": "로마",
+  "city_code": "FCO",
+  "collection_method": "pagination_ranking",
+  "collected_at": "2025-08-23T20:07:48.497228",
+  "total_urls": 5,
+  "max_page": 1,
+  "ranking_continuity": true,
+  "urls_with_ranking": [
+    {
+      "global_rank": 1,
+      "url": "https://www.klook.com/ko/activity/15699-colosseum-skip-line-ticket-rome/",
+      "page": 1,
+      "page_position": 1,
+      "collected_at": "2025-08-23T20:07:48.496476"
+    },
+    {
+      "global_rank": 2,
+      "url": "https://www.klook.com/ko/activity/75019-vatican-tour-italy/",
+      "page": 1,
+      "page_position": 2,
+      "collected_at": "2025-08-23T20:07:48.496476"
+    },
+    {
+      "global_rank": 3,
+      "url": "https://www.klook.com/ko/activity/17022-shared-fiumicino-airport-transfers-rome/",
+      "page": 1,
+      "page_position": 3,
+      "collected_at": "2025-08-23T20:07:48.496476"
+    },
+    {
+      "global_rank": 4,
+      "url": "https://www.klook.com/ko/activity/65009-colosseo-pcrtest-rome/",
+      "page": 1,
+      "page_position": 4,
+      "collected_at": "2025-08-23T20:07:48.496476"
+    },
+    {
+      "global_rank": 5,
+      "url": "https://www.klook.com/ko/activity/95454-pantheon-ticket-rome/",
+      "page": 1,
+      "page_position": 5,
+      "collected_at": "2025-08-23T20:07:48.496476"
+    }
+  ]
+}

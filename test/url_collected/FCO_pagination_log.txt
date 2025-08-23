@@ -1,0 +1,9 @@
+# 페이지네이션 기반 순위별 URL 수집
+# 수집일시: 2025-08-23 20:07:48
+# 총 5개 URL (순위별)
+
+ 1위 | 페이지1 | https://www.klook.com/ko/activity/15699-colosseum-skip-line-ticket-rome/
+ 2위 | 페이지1 | https://www.klook.com/ko/activity/75019-vatican-tour-italy/
+ 3위 | 페이지1 | https://www.klook.com/ko/activity/17022-shared-fiumicino-airport-transfers-rome/
+ 4위 | 페이지1 | https://www.klook.com/ko/activity/65009-colosseo-pcrtest-rome/
+ 5위 | 페이지1 | https://www.klook.com/ko/activity/95454-pantheon-ticket-rome/

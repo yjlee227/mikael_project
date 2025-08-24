@@ -287,65 +287,33 @@ def collect_urls_from_current_page(driver, limit=100):
     return collected_urls[:limit]
 
 def navigate_to_next_page(driver, current_page):
-    """다음 페이지로 이동"""
+    """다음 페이지로 이동 (통합 페이지네이션 매니저 사용)"""
     if not SELENIUM_AVAILABLE:
         return False
     
-    # 다음 페이지 버튼 셀렉터들
-    next_page_selectors = [
-        # KLOOK 특화 셀렉터들
-        "[data-testid='pagination-next']",
-        "[aria-label='다음']",
-        "[aria-label='Next']",
+    try:
+        from .pagination_utils import KlookPageTool
         
-        # 일반적인 페이지네이션 패턴
-        ".pagination .next",
-        ".pagination [aria-label*='next']",
-        ".pager .next",
+        # 테스트 검증된 KLOOK 페이지 도구 사용
+        page_tool = KlookPageTool(driver)
         
-        # 텍스트 기반 셀렉터들
-        "a:contains('다음')",
-        "a:contains('Next')",
-        "button:contains('다음')",
-        "button:contains('Next')",
+        # 부드러운 스크롤로 페이지네이션 영역 찾기
+        page_tool.smooth_scroll_to_pagination()
         
-        # 현재 페이지 + 1 페이지 링크
-        f"a[href*='page={current_page + 1}']",
-        f"a[href*='p={current_page + 1}']"
-    ]
-    
-    for selector in next_page_selectors:
-        try:
-            if ":contains(" in selector:
-                # XPath로 변환 (contains 지원)
-                if "다음" in selector:
-                    xpath = "//a[contains(text(), '다음')] | //button[contains(text(), '다음')]"
-                else:
-                    xpath = "//a[contains(text(), 'Next')] | //button[contains(text(), 'Next')]"
-                
-                next_element = driver.find_element(By.XPATH, xpath)
-            else:
-                next_element = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
-                )
-            
-            # 클릭 시도
-            driver.execute_script("arguments[0].click();", next_element)
-            
-            # 페이지 로딩 대기
-            time.sleep(random.uniform(2, 4))
-            
-            print(f"    ✅ 페이지 {current_page + 1}로 이동 성공")
+        # 고급 다음 페이지 클릭
+        current_url = driver.current_url
+        result = page_tool.click_next_page(current_url)
+        
+        if result['success']:
+            print(f"    ✅ 페이지 {current_page + 1}로 이동 성공 (방법: {result['method']})")
             return True
+        else:
+            print(f"    ❌ 페이지 {current_page + 1}로 이동 실패")
+            return False
             
-        except (TimeoutException, NoSuchElementException):
-            continue
-        except Exception as e:
-            print(f"    ⚠️ 다음 페이지 이동 시도 실패: {e}")
-            continue
-    
-    print(f"    ❌ 다음 페이지 버튼을 찾을 수 없습니다")
-    return False
+    except Exception as e:
+        print(f"    ❌ 페이지 이동 실패: {e}")
+        return False
 
 # =============================================================================
 # 🗺️ Sitemap 기반 URL 수집

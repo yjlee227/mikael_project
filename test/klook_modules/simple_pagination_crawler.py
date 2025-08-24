@@ -98,33 +98,21 @@ class SimplePaginationCrawler:
             return []
     
     def _go_to_next_page(self):
-        """다음 페이지로 이동"""
+        """다음 페이지로 이동 (통합 페이지네이션 매니저 사용)"""
         try:
-            # ">" 버튼 찾기
-            next_selectors = [
-                "button[aria-label*='다음']",
-                "button[aria-label*='Next']",
-                ".pagination .next",
-                "button:contains('>')"
-            ]
+            from .pagination_utils import KlookPageTool
             
-            for selector in next_selectors:
-                try:
-                    if 'contains' in selector:
-                        # XPath 방식
-                        button = self.driver.find_element(By.XPATH, "//button[contains(text(), '>')]")
-                    else:
-                        # CSS 방식
-                        button = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    
-                    if button.is_enabled():
-                        button.click()
-                        time.sleep(3)
-                        return True
-                except:
-                    continue
+            # 테스트 검증된 KLOOK 페이지 도구 사용
+            page_tool = KlookPageTool(self.driver)
             
-            return False
+            # 부드러운 스크롤로 페이지네이션 영역 찾기
+            page_tool.smooth_scroll_to_pagination()
+            
+            # 고급 다음 페이지 클릭
+            current_url = self.driver.current_url
+            result = page_tool.click_next_page(current_url)
+            
+            return result['success']
             
         except Exception as e:
             print(f"❌ 페이지 이동 실패: {e}")

@@ -11,7 +11,8 @@
       "Bash(python:*)",
       "Bash(mkdir:*)",
       "Bash(pip install:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(/dev/null)"
     ],
     "deny": [],
     "additionalDirectories": [

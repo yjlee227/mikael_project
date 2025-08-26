@@ -361,15 +361,14 @@ class KlookMasterController:
             # 세션 통계 업데이트
             self.session_stats["end_time"] = datetime.now()
             
-            # 드라이버 종료
+            # 브라우저 유지 (종료하지 않음)
             if self.driver:
                 try:
-                    self.driver.quit()
-                    print("  ✅ 웹드라이버 종료")
+                    # self.driver.quit() - 제거됨: 브라우저 열어두기
+                    print("  ✅ 웹드라이버 유지됨 (종료하지 않음)")
                 except:
-                    print("  ⚠️ 웹드라이버 종료 실패")
-                finally:
-                    self.driver = None
+                    print("  ⚠️ 웹드라이버 상태 확인 실패")
+                # finally: self.driver = None - 제거됨: 드라이버 레퍼런스 유지
             
             # 세션 결과 저장
             self._save_session_results()
@@ -732,11 +731,86 @@ def analyze_pagination(driver):
         print(f"❌ 페이지네이션 분석 실패: {e}")
         return {"error": str(e)}
 
-# check_next_button() 및 click_next_page_enhanced() 함수 제거됨
-# 이 기능들은 KlookPageTool 클래스에서 통합적으로 제공됩니다:
-# - KlookPageTool.is_last_page(): 마지막 페이지 확인
-# - KlookPageTool.click_next_page(): 고급 다음 페이지 클릭
-# - KlookPageTool.smooth_scroll_to_pagination(): 부드러운 스크롤
+def check_next_button(driver):
+    """KLOOK 다음 페이지 버튼 작동 확인"""
+    try:
+        from selenium.webdriver.common.by import By
+        
+        next_selectors = [
+            "[data-testid='pagination-next']",
+            "[aria-label='다음']",
+            "[aria-label='Next']",
+            ".pagination .next",
+            ".pager .next"
+        ]
+        
+        for selector in next_selectors:
+            try:
+                next_button = driver.find_element(By.CSS_SELECTOR, selector)
+                if next_button.is_displayed() and next_button.is_enabled():
+                    # disabled 클래스 확인
+                    classes = next_button.get_attribute("class") or ""
+                    if "disabled" not in classes.lower():
+                        print("    ✅ 다음 페이지 버튼 사용 가능")
+                        return True
+            except:
+                continue
+        
+        print("    ❌ 다음 페이지 버튼 없음 또는 비활성화")
+        return False
+        
+    except Exception as e:
+        print(f"    ⚠️ 다음 버튼 확인 실패: {e}")
+        return False
+
+def click_next_page_enhanced(driver, current_page):
+    """향상된 다음 페이지 클릭"""
+    try:
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        
+        print(f"    🔄 페이지 {current_page + 1}로 이동 시도...")
+        
+        # 현재 URL 저장 (변경 확인용)
+        current_url = driver.current_url
+        
+        # 다음 페이지 버튼 찾기 및 클릭
+        next_selectors = [
+            "[data-testid='pagination-next']",
+            "[aria-label='다음']",
+            "[aria-label='Next']",
+            ".pagination .next:not(.disabled)",
+            ".pager .next:not(.disabled)"
+        ]
+        
+        for selector in next_selectors:
+            try:
+                next_button = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                )
+                
+                # JavaScript 클릭 시도
+                driver.execute_script("arguments[0].click();", next_button)
+                
+                # 페이지 변경 대기 (URL 변경 또는 로딩 완료)
+                WebDriverWait(driver, 10).until(
+                    lambda d: d.current_url != current_url or 
+                    d.execute_script("return document.readyState") == "complete"
+                )
+                
+                print(f"    ✅ 페이지 {current_page + 1} 이동 완료")
+                return True
+                
+            except Exception as e:
+                continue
+        
+        print(f"    ❌ 페이지 {current_page + 1} 이동 실패")
+        return False
+        
+    except Exception as e:
+        print(f"    ❌ Enhanced 페이지 이동 실패: {e}")
+        return False
 
 def save_pagination_state(city_name, current_page, current_list_url, total_crawled, target_products):
     """페이지네이션 상태 저장"""
@@ -1108,7 +1182,8 @@ print("   - interactive_klook_crawler(): 대화형 실행")
 print("   - batch_city_crawler(): 다중 도시 배치 크롤링")
 print("   📄 페이지네이션 고급 (추가됨):")
 print("   - analyze_pagination(): 페이지네이션 정보 분석")
-print("   - 페이지네이션 기능은 KlookPageTool 클래스로 통합됨")
+print("   - check_next_button(): 다음 페이지 버튼 확인")
+print("   - click_next_page_enhanced(): 향상된 페이지 이동")
 print("   - save/load/clear_pagination_state(): 페이지네이션 상태 관리")
 print("   - generate_crawling_plan(): 크롤링 계획 생성")
 print("   🏃 빠른 실행 (추가됨):")

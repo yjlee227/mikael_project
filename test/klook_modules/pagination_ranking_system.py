@@ -156,29 +156,59 @@ class PaginationRankingSystem:
             return []
     
     def _navigate_to_next_page(self, driver):
-        """다음 페이지로 이동 (통합 페이지네이션 매니저 사용)"""
+        """다음 페이지로 이동"""
         try:
-            from .pagination_utils import KlookPageTool
+            from selenium.webdriver.common.by import By
+            from selenium.webdriver.support.ui import WebDriverWait
+            from selenium.webdriver.support import expected_conditions as EC
+            import time
             
-            # 테스트 검증된 KLOOK 페이지 도구 사용
-            page_tool = KlookPageTool(driver)
+            # 다양한 다음 페이지 버튼 셀렉터
+            next_selectors = [
+                "button[aria-label*='다음']",
+                "button[aria-label*='Next']", 
+                ".pagination .next",
+                ".pagination button:contains('>'))",
+                "[data-testid*='next']",
+                "button:contains('>'))",
+                ".pagination a[rel='next']"
+            ]
             
-            # 부드러운 스크롤로 페이지네이션 영역 찾기
-            page_tool.smooth_scroll_to_pagination()
+            for selector in next_selectors:
+                try:
+                    # CSS 선택자와 XPath 구분
+                    if 'contains' in selector:
+                        # XPath 방식
+                        next_button = WebDriverWait(driver, 5).until(
+                            EC.element_to_be_clickable((By.XPATH, f"//button[contains(text(), '>')]"))
+                        )
+                    else:
+                        # CSS 선택자 방식
+                        next_button = WebDriverWait(driver, 5).until(
+                            EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                        )
+                    
+                    # 버튼이 활성화되어 있는지 확인
+                    if next_button.is_enabled() and not next_button.get_attribute('disabled'):
+                        print(f"   🔄 다음 페이지 버튼 클릭: {selector}")
+                        
+                        # JavaScript로 클릭 (더 안정적)
+                        driver.execute_script("arguments[0].click();", next_button)
+                        
+                        # 페이지 변화 대기
+                        time.sleep(3)
+                        
+                        print(f"   ✅ 다음 페이지로 이동 성공")
+                        return True
+                        
+                except Exception as e:
+                    continue
             
-            # 고급 다음 페이지 클릭
-            current_url = driver.current_url
-            result = page_tool.click_next_page(current_url)
+            print(f"   ❌ 다음 페이지 버튼을 찾을 수 없음")
+            return False
             
-            if result['success']:
-                print(f"   ✅ 다음 페이지 이동 성공 (방법: {result['method']})")
-                return True
-            else:
-                print(f"   ❌ 다음 페이지 이동 실패")
-                return False
-                
         except Exception as e:
-            print(f"   ❌ 페이지 이동 실패: {e}")
+            print(f"   ❌ 다음 페이지 이동 실패: {e}")
             return False
     
     def _save_pagination_ranking_data(self, collected_urls, city_name):

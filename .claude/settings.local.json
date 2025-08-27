@@ -12,7 +12,8 @@
       "Bash(mkdir:*)",
       "Bash(pip install:*)",
       "Bash(cp:*)",
-      "Bash(/dev/null)"
+      "Bash(/dev/null)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "additionalDirectories": [

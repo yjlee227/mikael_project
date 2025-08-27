@@ -734,6 +734,7 @@ def auto_create_country_csv_after_crawling(city_name):
     except Exception as e:
         print(f"   ⚠️ 국가별 통합 CSV 자동 생성 중 오류: {e}")
 
+
 print("✅ file_handler.py 로드 완료: 파일 처리 시스템 준비!")
 print("   📸 도시코드 기반 이미지 파일명: KMJ_0001.jpg, KMJ_0001_thumb.jpg")
 print("   📊 국가별 통합 CSV 자동 생성 기능 포함")

@@ -131,10 +131,14 @@ def setup_driver():
         print(f"❌ 드라이버 초기화 실패: {e}")
         raise
 
+
 def go_to_main_page(driver):
-    """KLOOK 메인 페이지로 이동 (원본 코드)"""
+    """KLOOK 메인 페이지로 이동 (스크롤 기능 추가)"""
+    print("KLOOK 메인 페이지로 이동합니다...")
     driver.get("https://www.klook.com/ko/search/result/?query=%EC%84%9C%EC%9A%B8")
     time.sleep(random.uniform(CONFIG.get("MEDIUM_MIN_DELAY", 2), CONFIG.get("MEDIUM_MAX_DELAY", 4)))
+    print("페이지 로드 후 자연스러운 스크롤을 실행합니다.")
+    smart_scroll_selector(driver)  # 새로운 스크롤 함수 호출
     return True
 
 def find_and_fill_search(driver, city_name):
@@ -248,37 +252,86 @@ def handle_popup(driver):
 # =============================================================================
 # 자연스러운 사용자 행동 시뮬레이션
 # =============================================================================
+def smart_scroll_selector(driver):
+    """스마트 스크롤 선택기 - 두 함수 중 랜덤 선택"""
+    scroll_functions = [
+        ("기본", human_like_scroll_patterns),
+        ("향상", enhanced_scroll_patterns)
+    ]
+    _, selected_function = random.choice(scroll_functions)
+    print(f"   - 스크롤 패턴: '{selected_function.__name__}' 실행")
+    selected_function(driver)
 
-def human_like_scroll(driver, scroll_pause_time=1):
-    """자연스러운 스크롤"""
+def human_like_scroll_patterns(driver):
+    """기본 스크롤 패턴 (3가지)"""
+    patterns = ["smooth_reading", "comparison_scroll", "quick_scan"]
+    selected = random.choice(patterns)
+
     try:
-        # 현재 페이지 높이
-        last_height = driver.execute_script("return document.body.scrollHeight")
-        
-        while True:
-            # 무작위 스크롤 거리
-            scroll_distance = random.randint(300, 800)
-            
-            # 스크롤 실행
-            driver.execute_script(f"window.scrollBy(0, {scroll_distance});")
-            
-            # 무작위 대기
-            time.sleep(random.uniform(0.5, scroll_pause_time))
-            
-            # 새로운 높이 확인
-            new_height = driver.execute_script("return document.body.scrollHeight")
-            current_position = driver.execute_script("return window.pageYOffset + window.innerHeight")
-            
-            # 페이지 끝에 도달했는지 확인
-            if current_position >= new_height * 0.95:
-                break
-                
-        print("✅ 자연스러운 스크롤 완료")
-        return True
-        
+        if selected == "smooth_reading":
+            for i in range(random.randint(3, 5)):
+                scroll_amount = random.randint(250, 500)
+                driver.execute_script(f"window.scrollBy({{top: {scroll_amount}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(0.8, 2.0))
+
+        elif selected == "comparison_scroll":
+            for i in range(random.randint(2, 3)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(400, 700)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(0.8, 1.5))
+                driver.execute_script(f"window.scrollBy({{top: -{random.randint(100, 300)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(0.8, 1.5))
+
+        elif selected == "quick_scan":
+            for i in range(random.randint(4, 7)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(300, 600)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(0.3, 1.0))
     except Exception as e:
-        print(f"⚠️ 스크롤 중 오류: {e}")
-        return False
+        print(f"  스크롤 오류 (human_like): {e}")
+
+def enhanced_scroll_patterns(driver):
+    """향상된 스크롤 패턴 (5가지)"""
+    patterns = [
+        "natural_reading", "search_and_compare", "rapid_overview",
+        "detailed_inspection", "hesitant_browsing"
+    ]
+    selected = random.choice(patterns)
+
+    try:
+        if selected == "natural_reading":
+            for _ in range(random.randint(4, 6)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(200, 400)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(1.5, 3.0))
+                if random.random() < 0.25:
+                    driver.execute_script(f"window.scrollBy({{top: -{random.randint(50, 150)}, behavior: 'smooth'}});")
+                    time.sleep(random.uniform(0.5, 1.0))
+
+        elif selected == "search_and_compare":
+            for _ in range(random.randint(3, 5)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(500, 800)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(0.8, 1.5))
+                if random.random() < 0.5:
+                    driver.execute_script(f"window.scrollBy({{top: -{random.randint(200, 400)}, behavior: 'smooth'}});")
+                    time.sleep(random.uniform(2.0, 3.5))
+
+        elif selected == "rapid_overview":
+            for _ in range(random.randint(6, 9)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(400, 700)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(0.3, 0.8))
+
+        elif selected == "detailed_inspection":
+            for _ in range(random.randint(3, 4)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(150, 300)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(3.0, 5.0))
+
+        elif selected == "hesitant_browsing":
+            for _ in range(random.randint(4, 7)):
+                driver.execute_script(f"window.scrollBy({{top: {random.randint(200, 400)}, behavior: 'smooth'}});")
+                time.sleep(random.uniform(1.0, 2.0))
+                if random.random() < 0.5:
+                    driver.execute_script(f"window.scrollBy({{top: -{random.randint(100, 200)}, behavior: 'smooth'}});")
+                    time.sleep(random.uniform(0.8, 1.5))
+    except Exception as e:
+        print(f"  스크롤 오류 (enhanced): {e}")
 
 def random_delay(min_seconds=1, max_seconds=3):
     """무작위 대기"""

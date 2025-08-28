@@ -11,7 +11,7 @@ from datetime import datetime
 
 from ..config import CONFIG, SELENIUM_AVAILABLE
 from ..utils.file_handler import create_product_data_structure, save_to_csv_klook, get_dual_image_urls_klook, download_and_save_image_klook, ensure_directory_structure
-from .driver_manager import setup_driver, go_to_main_page, find_and_fill_search, click_search_button, handle_popup, human_like_scroll
+from .driver_manager import setup_driver, go_to_main_page, find_and_fill_search, click_search_button, handle_popup, smart_scroll_selector
 from .url_manager import collect_urls_from_page, get_pagination_urls, is_url_already_processed, mark_url_as_processed
 from .parsers import extract_all_product_data, validate_product_data
 from .ranking import save_url_with_rank, ranking_manager, get_collected_ranks_summary
@@ -111,7 +111,7 @@ class KlookCrawler:
             time.sleep(random.uniform(2, 4))
             
             # 데이터 추출
-            product_data = extract_all_product_data(self.driver, url, rank)
+            product_data = extract_all_product_data(self.driver, url, rank, city_name=self.city_name)
             
             # 데이터 검증
             if not validate_product_data(product_data):

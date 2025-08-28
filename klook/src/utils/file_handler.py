@@ -48,24 +48,15 @@ def create_product_data_structure(city_name, product_number, rank=None):
         "리뷰수": "",
         "카테고리": "",
         "하이라이트": "",              # 🆕 원본 기능 추가
-        "특징": "",
+        "위치태그": "",
         "언어": "",                  # 🆕 원본 기능 추가
-        "태그": "",
-        "설명": "",
         "URL": "",
-        "상품번호": "",
-        
+               
         # 이미지 정보
         "메인이미지": "",
         "썸네일이미지": "",
-        
-        # 위치 정보
-        "주소": "",
-        "위도": "",
-        "경도": "",
-        
+                    
         # 추가 정보
-        "예약가능여부": "",
         "취소정책": "",
         "언어": "",
         "소요시간": "",
@@ -75,7 +66,6 @@ def create_product_data_structure(city_name, product_number, rank=None):
         
         # 메타데이터
         "데이터소스": "KLOOK",
-        "크롤링버전": "v2.0",
         "해시값": ""
     }
     
@@ -114,10 +104,10 @@ def is_duplicate_hash(city_name, new_hash):
     try:
         continent, country = get_city_info(city_name)
         
-        # CSV 파일 경로 결정 (범용적으로 수정)
-        if city_name == country:
-            # 도시국가: 대륙 직하에 저장
-            csv_path = os.path.join("data", continent, f"klook_{city_name}_products.csv")
+        # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
+        if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
+            # 도시국가: 대륙 직하에 통합 파일명으로 저장
+            csv_path = os.path.join("data", continent, f"{city_name}_통합_klook_products.csv")
         else:
             # 일반 도시: 대륙/국가/도시 구조
             csv_path = os.path.join("data", continent, country, city_name, f"klook_{city_name}_products.csv")
@@ -142,14 +132,14 @@ def save_to_csv_klook(product_data, city_name):
     try:
         continent, country = get_city_info(city_name)
         
-        # CSV 파일 경로 결정 (범용적으로 수정)
-        if city_name == country:
-            # 도시국가: 대륙 직하에 저장
-            csv_path = os.path.join("data", continent, f"klook_{city_name}_products.csv")
+        # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
+        if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
+            # 도시국가: 대륙 직하에 통합 파일명으로 저장
+            csv_path = os.path.join("data", continent, f"{city_name}_통합_klook_products.csv")
         else:
             # 일반 도시: 대륙/국가/도시 구조
             csv_path = os.path.join("data", continent, country, city_name, f"klook_{city_name}_products.csv")
-        
+       
         # 디렉토리 생성
         os.makedirs(os.path.dirname(csv_path), exist_ok=True)
         
@@ -194,14 +184,14 @@ def get_csv_stats(city_name):
     try:
         continent, country = get_city_info(city_name)
         
-        # CSV 파일 경로 결정 (범용적으로 수정)
-        if city_name == country:
-            # 도시국가: 대륙 직하에 저장
-            csv_path = os.path.join("data", continent, f"klook_{city_name}_products.csv")
+        # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
+        if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
+            # 도시국가: 대륙 직하에 통합 파일명으로 저장
+            csv_path = os.path.join("data", continent, f"{city_name}_통합_klook_products.csv")
         else:
             # 일반 도시: 대륙/국가/도시 구조
             csv_path = os.path.join("data", continent, country, city_name, f"klook_{city_name}_products.csv")
-        
+              
         if not os.path.exists(csv_path):
             return {"error": "CSV 파일을 찾을 수 없습니다"}
         
@@ -320,26 +310,26 @@ def download_single_image_klook(img_src, product_number, city_name, image_type="
         # 이미지 폴더 경로 - 원본 코드와 동일
         continent, country = get_city_info(city_name)
         img_base_folder = os.path.join(os.getcwd(), "klook_img")
-        
+
         # 폴더 구조 (범용적으로 수정)
         continent, country = get_city_info(city_name)
         if city_name == country:
-            # 도시국가: 대륙 직하에 저장
-            img_folder = os.path.join(img_base_folder, continent)
+            # 도시국가: 대륙/국가 구조 (도시 폴더 생략)
+            img_folder = os.path.join(img_base_folder, continent, country)
         else:
             # 일반 도시: 대륙/국가/도시 구조
             img_folder = os.path.join(img_base_folder, continent, country, city_name)
-        
+
         os.makedirs(img_folder, exist_ok=True)
         img_path = os.path.join(img_folder, img_filename)
-        
+
         # 이미지 다운로드
         headers = {
             'User-Agent': CONFIG.get("USER_AGENT", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"),
             'Referer': 'https://www.klook.com/',
             'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8'
         }
-        
+               
         response = requests.get(img_src, headers=headers, timeout=10)
         response.raise_for_status()
         
@@ -511,10 +501,10 @@ def get_last_product_number(city_name):
     try:
         continent, country = get_city_info(city_name)
         
-        # CSV 파일 경로 결정 (범용적으로 수정)
-        if city_name == country:
-            # 도시국가: 대륙 직하에 저장
-            csv_path = os.path.join("data", continent, f"klook_{city_name}_products.csv")
+        # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
+        if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
+            # 도시국가: 대륙 직하에 통합 파일명으로 저장
+            csv_path = os.path.join("data", continent, f"{city_name}_통합_klook_products.csv")
         else:
             # 일반 도시: 대륙/국가/도시 구조
             csv_path = os.path.join("data", continent, country, city_name, f"klook_{city_name}_products.csv")
@@ -719,22 +709,25 @@ def create_country_consolidated_csv(country_name, force_recreate=False):
         return False
 
 def auto_create_country_csv_after_crawling(city_name):
-    """크롤링 완료 후 자동으로 국가별 통합 CSV 생성"""
+    """크롤링 완료 후 자동으로 국가별 통합 CSV 생성 (도시국가 제외)"""
     try:
         continent, country = get_city_info(city_name)
         
+        # 도시국가는 통합 CSV 생성 불필요
+        if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
+            print(f"\n'{city_name}'는 도시국가로 별도 통합 파일 생성 안함")
+            return
+            
         if country:
-            print(f"\n🌏 '{city_name}' 크롤링 완료 후 '{country}' 국가별 통합 CSV 자동 생성...")
-            success = create_country_consolidated_csv(country)
+            print(f"\n'{city_name}' 크롤링 완료 후 '{country}' 국가별 통합 CSV 자동 생성...")
+            success = create_country_consolidated_csv(country, force_recreate=True)
             if success:
-                print(f"   ✅ '{country}' 국가별 통합 CSV 자동 생성 완료!")
+                print(f"   '{country}' 국가별 통합 CSV 자동 생성 완료!")
             else:
-                print(f"   ⚠️ '{country}' 국가별 통합 CSV 생성 실패")
-        
+                print(f"   '{country}' 국가별 통합 CSV 생성 실패")
     except Exception as e:
-        print(f"   ⚠️ 국가별 통합 CSV 자동 생성 중 오류: {e}")
+        print(f"   국가별 통합 CSV 자동 생성 중 오류: {e}")
 
-
-print("✅ file_handler.py 로드 완료: 파일 처리 시스템 준비!")
-print("   📸 도시코드 기반 이미지 파일명: KMJ_0001.jpg, KMJ_0001_thumb.jpg")
-print("   📊 국가별 통합 CSV 자동 생성 기능 포함")
+print("file_handler.py 로드 완료: 파일 처리 시스템 준비!")
+print("   도시코드 기반 이미지 파일명: KMJ_0001.jpg, KMJ_0001_thumb.jpg")
+print("   국가별 통합 CSV 자동 생성 기능 포함 (도시국가 제외)")

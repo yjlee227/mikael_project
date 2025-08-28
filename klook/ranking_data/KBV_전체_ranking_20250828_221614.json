@@ -1,0 +1,38 @@
+{
+  "city_name": "크라비",
+  "city_code": "KBV",
+  "tab_name": "전체",
+  "target_products": 3,
+  "total_collected": 3,
+  "pages_processed": 5,
+  "collected_at": "2025-08-28T22:16:14.799091",
+  "ranking_data": [
+    {
+      "url": "https://www.klook.com/ko/activity/82319-join-2-days-cheow-lan-lake-raft-house-krabi-suratthani/",
+      "rank": 4,
+      "tab": "전체",
+      "city": "크라비",
+      "page": 2,
+      "product_number": 4,
+      "collected_at": "2025-08-28T22:14:42.629866"
+    },
+    {
+      "url": "https://www.klook.com/ko/activity/6626-andaman-wave-master-one-way-ticket-phuket-phi-phi-island/",
+      "rank": 6,
+      "tab": "전체",
+      "city": "크라비",
+      "page": 5,
+      "product_number": 5,
+      "collected_at": "2025-08-28T22:15:45.318557"
+    },
+    {
+      "url": "https://www.klook.com/ko/activity/27756-krabi-hong-islands-half-day-speedboat-tour/",
+      "rank": 7,
+      "tab": "전체",
+      "city": "크라비",
+      "page": 5,
+      "product_number": 6,
+      "collected_at": "2025-08-28T22:16:12.686408"
+    }
+  ]
+}

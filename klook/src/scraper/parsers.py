@@ -11,6 +11,9 @@ import random
 from datetime import datetime
 
 from ..config import CONFIG, SELENIUM_AVAILABLE
+from ..utils.location_learning import LocationLearningSystem
+
+# 학습 시스템 인스턴스는 함수 내에서 동적으로 생성
 
 if SELENIUM_AVAILABLE:
     from selenium.webdriver.common.by import By
@@ -273,56 +276,69 @@ def get_highlights(driver):
         return "정보 없음"
 
 def get_long_highlight_content(driver):
-    """유형 1: 긴 하이라이트 - 펼치기 버튼 클릭 후 모달에서 수집"""
-    print("    🔽 긴 내용 - 펼치기 버튼 클릭 후 모달 수집")
-    
+    """유형 1: 긴 하이라이트 - 펼치기 버튼 클릭 후 모달에서 수집 (스크롤 및 딜레이 추가)"""
+    print("    긴 내용 - 펼치기 버튼 클릭 후 모달 수집")
+
     try:
-        # 1. 펼치기 버튼 클릭 (원본 소스 기반 셀렉터)
+        # 1. 펼치기 버튼 찾기
         expand_button = driver.find_element(By.CSS_SELECTOR, "#highlight .experience-view-more_text")
+
+        # 2. 버튼이 화면 중앙에 오도록 스크롤 (가장 인간적인 방식)
+        print("      '자세히 보기' 버튼으로 스크롤 중...")
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", expand_button)
+        time.sleep(random.uniform(0.5, 1.0))  # 스크롤 후 잠시 대기
+
+        # 3. 버튼 클릭
+        time.sleep(random.uniform(0.6, 1.4))  # 클릭 전 잠시 망설이는 시간
         driver.execute_script("arguments[0].click();", expand_button)
-        
-        # 2. 모달 로드 대기 (정확한 원본 셀렉터)
+        print("      '자세히 보기' 버튼 클릭")
+
+        # 4. 모달 로드 대기
         modal_body = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "body > div.klk-modal-wrapper > div > div.klk-modal-body"))
         )
-        
-        # 3. 모달이 완전히 표시될 때까지 추가 대기
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, ".klk-modal-wrapper"))
-        )
-        
-        # 4. 모달 내 전체 내용 수집
+        time.sleep(random.uniform(1.5, 2.5))  # 모달이 완전히 표시될 때까지 추가 대기
+
+        # 5. 모달 내 전체 내용 수집
         full_content = modal_body.text.strip()
-        
+
         if not full_content:
             raise Exception("모달 내용이 비어있음")
-        
-        # 5. 모달 닫기 (원본 소스 기반 - 여러 방법 시도)
+
+        print(f"    전체 하이라이트 수집 완료 (길이: {len(full_content)}자)")
+
+        # 6. 내용 읽는 시간 시뮬레이션
+        reading_time = random.uniform(2.0, 4.5)
+        print(f"      {reading_time:.1f}초 동안 내용 읽는 중...")
+        time.sleep(reading_time)
+
+        # 7. 모달 닫기 (여러 방법 시도)
         try:
             # 방법 1: X 버튼 클릭
-            close_button = driver.find_element(By.CSS_SELECTOR, "body > div.klk-modal-wrapper > div > i")
+            close_button = driver.find_element(By.CSS_SELECTOR, "body > div.klk-modal-wrapper > div > i.klk-icon-close")
             driver.execute_script("arguments[0].click();", close_button)
-            time.sleep(1)
+            print("      닫기 버튼 클릭 (X 버튼)")
         except:
             try:
                 # 방법 2: ESC키로 모달 닫기
                 from selenium.webdriver.common.keys import Keys
                 driver.find_element(By.TAG_NAME, "body").send_keys(Keys.ESCAPE)
-                time.sleep(1)
+                print("      닫기 버튼 클릭 (ESC 키)")
             except:
                 # 방법 3: 모달 배경 클릭
                 try:
                     modal_wrapper = driver.find_element(By.CSS_SELECTOR, ".klk-modal-wrapper")
                     driver.execute_script("arguments[0].click();", modal_wrapper)
+                    print("      닫기 버튼 클릭 (배경)")
                 except:
-                    pass  # 모달 닫기 실패해도 계속 진행
-        
-        print(f"    ✅ 전체 하이라이트 수집 완료 (길이: {len(full_content)}자)")
+                    print("      모달 닫기 실패")
+                    pass
+
+        time.sleep(random.uniform(0.7, 1.3))  # 닫은 후 잠시 대기
         return full_content
-        
+
     except Exception as e:
-        print(f"    ⚠️ 모달 방식 실패: {e} - 기본 요약으로 fallback")
-        # 실패 시 기본 요약이라도 수집
+        print(f"    모달 방식 실패: {e} - 기본 요약으로 fallback")
         return get_short_highlight_content(driver)
 
 def get_short_highlight_content(driver):
@@ -514,6 +530,33 @@ def get_language(driver):
         print(f"    ❌ 언어 정보 수집 실패: {e}")
         return "한국어"  # 기본값
 
+def get_location_tags(city_name, product_name, highlights):
+    """자동 학습 시스템을 통해 위치 태그 추출"""
+    print("  📍 위치 태그 추출 및 학습 중...")
+
+    if not SELENIUM_AVAILABLE:
+        return "위치 태그 추출 불가"
+
+    # 상품명과 하이라이트 텍스트를 합쳐서 분석
+    text_to_learn = f"{product_name} {highlights}"
+
+    try:
+        # 도시별 학습 시스템 인스턴스 생성
+        learning_system = LocationLearningSystem(city_name=city_name)
+        
+        # 학습 시스템을 통해 태그 가져오기
+        tags = learning_system.get_location_tags(city_name, text_to_learn)
+
+        if tags:
+            tag_str = ", ".join(tags)
+            print(f"    ✅ 추출된 위치 태그: {tag_str}")
+            return tag_str
+        else:
+            print("    ℹ️ 추출된 위치 태그 없음")
+            return ""
+    except Exception as e:
+        print(f"    ⚠️ 위치 태그 추출 실패: {e}")
+        return ""
 # =============================================================================
 # 데이터 정제 시스템
 # =============================================================================
@@ -606,7 +649,7 @@ def clean_text(text):
 # 통합 데이터 추출 시스템
 # =============================================================================
 
-def extract_all_product_data(driver, url, rank=None):
+def extract_all_product_data(driver, url, rank=None, city_name=None):
     """상품 페이지에서 모든 데이터 추출 (하이라이트, 언어 정보 포함)"""
     print(f"📊 상품 데이터 추출 시작 (순위: {rank})")
     
@@ -615,13 +658,17 @@ def extract_all_product_data(driver, url, rank=None):
         time.sleep(random.uniform(2, 4))
         
         # 각 데이터 추출 (원본 정교한 기능들 포함)
+        product_name = clean_text(get_product_name(driver))
+        highlights = get_highlights(driver)
+        
         product_data = {
-            "상품명": clean_text(get_product_name(driver)),
+            "상품명": product_name,
             "가격": get_price(driver),
             "평점": get_rating(driver),
             "리뷰수": get_review_count(driver),
             "카테고리": clean_text(get_categories(driver)),
-            "하이라이트": get_highlights(driver),      # 🆕 원본 기능 추가
+            "하이라이트": highlights,      # 🆕 원본 기능 추가
+            "위치태그": get_location_tags(city_name, product_name, highlights),  # 🆕 위치태그 추가
             "특징": clean_text(get_features(driver)),
             "언어": get_language(driver),                        # 🆕 원본 기능 추가
             "URL": url,

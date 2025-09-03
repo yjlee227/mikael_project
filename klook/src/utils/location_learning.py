@@ -6,7 +6,17 @@ from collections import defaultdict
 class LocationLearningSystem:
     def __init__(self, db_path=None, city_name=None):
         self.current_city = city_name
-        
+
+        # KoNLPy 초기화 (조건부)
+        from klook.src.config import KONLPY_AVAILABLE
+        if KONLPY_AVAILABLE:
+            from konlpy.tag import Okt
+            self.okt = Okt()
+            print(f"🔧 {city_name or '기본'} 도시용 품사 분석기 초기화 완료")
+        else:
+            self.okt = None
+            print(f"⚠️ {city_name or '기본'} 도시: 패턴 기반 키워드 추출 사용")
+
         if db_path is None:
             current_file = os.path.abspath(__file__)
             project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_file)))
@@ -26,7 +36,7 @@ class LocationLearningSystem:
         """도시명으로부터 새로운 구조의 파일 경로 생성"""
         try:
             # config.py에서 도시 정보 가져오기
-            from ..config import get_city_info, get_city_code
+            from klook.src.config import get_city_info, get_city_code
             
             continent, country = get_city_info(city_name)
             city_code = get_city_code(city_name)
@@ -75,43 +85,50 @@ class LocationLearningSystem:
             print(f"    ❌ 위치 학습 데이터 저장 실패: {e}")
 
     def _extract_potential_keywords(self, text):
-        """텍스트에서 명사 기반의 잠재적 키워드를 추출합니다."""
+        """[개선] 품사 분석을 통해 사용자 검색 관점의 키워드를 추출합니다."""
         if not text:
             return []
 
-        # 영어 패턴: 대문자로 시작하는 단어들 (Louvre, Orsay, Museum 등)
+        # KoNLPy 사용 가능 시 품사 분석
+        if self.okt:
+            try:
+                pos_tagged = self.okt.pos(text, norm=True, stem=True)
+                # 명사와 알파벳만 추출
+                potential_keywords = [word for word, pos in pos_tagged if pos in ['Noun', 'Alpha']]
+            except Exception as e:
+                print(f"    ⚠️ 품사 분석 실패, 패턴 방식으로 폴백: {e}")
+                potential_keywords = self._regex_extract_fallback(text)
+        else:
+            # 폴백: 기존 정규식 방식
+            potential_keywords = self._regex_extract_fallback(text)
+
+        # 사용자 검색 관점 기반 필터링
+        functional_words = [
+            # 순수 기능어 (사용자가 절대 검색하지 않을 단어)
+            "타고", "출발", "또는", "그리고", "함께", "위해", "동안", "하여", "통해",
+            "있는", "있습니다", "제공", "포함", "가능", "위한", "모든", "여러",
+            "방법을", "하세요", "보세요", "즐기세요", "만끽하고", "탐험하고"
+        ]
+
+        # 길이 조건 + 기능어 제거
+        cleaned_keywords = [
+            kw.strip() for kw in potential_keywords
+            if kw.strip() not in functional_words and 1 < len(kw.strip()) < 20
+        ]
+
+        return list(set(cleaned_keywords))  # 중복 제거
+
+    def _regex_extract_fallback(self, text):
+        """폴백: 기존 정규식 방식"""
+        # 영어 패턴
         english_pattern = r'\b[A-Z][a-zA-Z]+\b'
         english_keywords = re.findall(english_pattern, text)
-        
-        # 한글 패턴: 2글자 이상 한글
+
+        # 한글 패턴
         korean_pattern = r'[가-힣]{2,}'
         korean_keywords = re.findall(korean_pattern, text)
-        
-        all_keywords = english_keywords + korean_keywords
-        
-        stop_words = [
-            # 기본 서비스 관련
-            "Klook", "클룩", "바우처", "티켓", "입장권", "투어", "액티비티", "싱가포르", "한국어",
-            "Museum", "Gallery", "Tour", "Ticket", "Experience", "Activity", "Private", "Skip",
-            
-            # 일반 동사/형용사 (의미없는 키워드)
-            "시간", "동안", "제공", "포함", "가능", "안전", "무료", "위한", "모든", "아름다운", "멋진",
-            "경험을", "경험하세요", "즐겨보세요", "감상하세요", "탐험하세요", "여행해보세요", "방문하고",
-            "즐기세요", "탐험해보세요", "현지인처럼", "일시적인", "흔들리는", "분리된", "따뜻한",
-            
-            # 일반 명사/도구 (위치와 무관)
-            "키트", "사용", "생수", "경험", "선크림", "마법을", "아름다움을", "구명조끼", "마스크",
-            "음료", "간식", "뷔페", "식사", "과일", "칵테일", "음악", "시스템", "옵션", "요금",
-            
-            # 일반적인 형태소/조사
-            "동안", "위해", "함께", "가까이서", "사이에서", "근처에서", "따라", "여러", "번의",
-            "있는", "모든", "최고의", "숙련된", "놀라운", "상징적인"
-        ]
-        
-        # 길이가 적절하고 스탑워드가 아닌 키워드만 반환
-        cleaned_keywords = [kw.strip() for kw in all_keywords if kw.strip() not in stop_words and 1 < len(kw.strip()) < 20]
-        
-        return list(set(cleaned_keywords))  # 중복 제거
+
+        return english_keywords + korean_keywords
 
     def learn_from_text(self, city_name, text):
         """주어진 텍스트에서 키워드를 학습하고 DB를 업데이트합니다."""

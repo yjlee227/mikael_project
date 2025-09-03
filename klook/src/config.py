@@ -57,6 +57,14 @@ try:
 except ImportError:
     REQUESTS_AVAILABLE = False
 
+try:
+    from konlpy.tag import Okt
+    KONLPY_AVAILABLE = True
+    print("🔧 KoNLPy 사용 가능")
+except ImportError:
+    KONLPY_AVAILABLE = False
+    print("⚠️ KoNLPy 없음. 기본 패턴 사용")
+
 # ⭐⭐⭐ 중요 설정: 여기서 수정하세요! ⭐⭐⭐
 CONFIG = {
     "WAIT_TIMEOUT": 10,

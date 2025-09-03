@@ -29,46 +29,42 @@ def create_product_data_structure(city_name, product_number, rank=None):
     continent, country = get_city_info(city_name)
     city_code = get_city_code(city_name)
     
-    # 기본 데이터 구조
+    # 최적화된 데이터 구조 (그룹별 정리)
     base_data = {
-        # 기본 정보
+        # 그룹 1: 핵심 식별 정보 (6개) - 가장 중요한 정보
         "번호": product_number,
+        "상품명": "",
+        "가격": "",
+        "평점": "",
+        "리뷰수": "",
+        "URL": "",
+        
+        # 그룹 2: 위치/지역 정보 (5개) - 지리적 정보
         "도시ID": city_code,
         "도시명": city_name,
         "대륙": continent,
         "국가": country,
-        "순위": rank or product_number,
-        "수집일시": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        
-        # 상품 정보 (parsers.py에서 채워짐)
-        "상품명": "",
-        "가격": "",
-        "통화": "KRW",
-        "평점": "",
-        "리뷰수": "",
-        "카테고리": "",
-        "하이라이트": "",              # 🆕 원본 기능 추가
         "위치태그": "",
-        "언어": "",                  # 🆕 원본 기능 추가
-        "URL": "",
-               
-        # 이미지 정보
-        "메인이미지": "",
-        "썸네일이미지": "",
-                    
-        # 추가 정보
-        "취소정책": "",
-        "언어": "",
-        "소요시간": "",
-        "포함사항": "",
-        "제외사항": "",
-        "주의사항": "",
         
-        # 메타데이터
+        # 그룹 3: 상품 속성 정보 (7개) - 상품 특성
+        "카테고리": "",
+        "언어": "",                  # 투어 가이드 언어
+        "투어형태": "",              # 조인/프라이빗 투어 형태
+        "미팅방식": "",              # 픽업/집합지 미팅 방식
+        "소요시간": "",              # 투어 소요시간
+        "하이라이트": "",
+        "순위": rank or product_number,
+        
+        # 그룹 4: 부가/메타 정보 (4개) - 시스템 정보
+        "통화": "KRW",
+        "수집일시": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "데이터소스": "KLOOK",
-        "해시값": ""
-    }
-    
+        "해시값": "",
+        
+        # 그룹 5: 이미지 정보 (2개) - 저장 경로만
+        "메인이미지": "",
+        "썸네일이미지": ""
+    }      
     return base_data
 
 # =============================================================================
@@ -420,6 +416,94 @@ def download_dual_images_klook(image_urls, product_number, city_name, max_size_k
         print(f"    ❌ 이미지 저장 실패")
     
     return results
+
+def find_project_root():
+    """klook 프로젝트 루트 디렉토리를 자동으로 찾기 (어디서 실행되든 작동)"""
+    current_path = os.path.abspath(os.getcwd())
+    
+    # 현재 위치부터 시작해서 상위로 올라가며 klook 프로젝트 찾기
+    search_path = current_path
+    max_depth = 10  # 무한루프 방지
+    
+    for i in range(max_depth):
+        # klook 프로젝트 특징적 파일/폴더들 확인
+        indicators = [
+            'klook_img',           # 이미지 폴더
+            'src',                 # 소스 코드 폴더
+            'data',                # 데이터 폴더
+            'KLOOK_Crawler_v2.ipynb'  # 노트북 파일
+        ]
+        
+        # 특징 요소 중 2개 이상 있으면 프로젝트 루트로 판단
+        found_indicators = 0
+        for indicator in indicators:
+            if os.path.exists(os.path.join(search_path, indicator)):
+                found_indicators += 1
+        
+        if found_indicators >= 2:
+            return search_path
+        
+        # 상위 디렉토리로 이동
+        parent_path = os.path.dirname(search_path)
+        if parent_path == search_path:  # 루트 디렉토리 도달
+            break
+        search_path = parent_path
+    
+    # 프로젝트 루트를 찾지 못하면 현재 위치 사용
+    print(f"klook 프로젝트 루트를 찾지 못했습니다. 현재 위치 사용: {current_path}")
+    return current_path
+
+def get_smart_image_path(city_name, product_number, image_type="main"):
+    """스마트 이미지 경로 생성 - 실행 환경에 관계없이 올바른 절대 경로 반환"""
+    try:
+        # 프로젝트 루트 자동 감지
+        project_root = find_project_root()
+        
+        # 도시 정보 및 파일명 생성
+        city_code = get_city_code(city_name)
+        continent, country = get_city_info(city_name)
+        
+        if image_type == "main":
+            filename = f"{city_code}_{product_number:04d}.jpg"
+        else:
+            filename = f"{city_code}_{product_number:04d}_thumb.jpg"
+        
+        # 이미지 저장 경로 구조 생성
+        if city_name == country:  # 도시국가
+            relative_path = os.path.join("klook_img", continent, country, filename)
+        else:  # 일반 도시
+            relative_path = os.path.join("klook_img", continent, country, city_name, filename)
+        
+        # 절대 경로 생성
+        absolute_path = os.path.join(project_root, relative_path)
+        
+        # OS별 경로 정규화
+        normalized_path = os.path.abspath(absolute_path)
+        return normalized_path
+        
+    except Exception as e:
+        print(f"스마트 이미지 경로 생성 실패: {e}")
+        return ""
+
+def verify_image_path(image_path):
+    """이미지 파일 경로 검증 및 정보 반환"""
+    if not image_path or image_path == "이미지 없음":
+        return {"exists": False, "info": "이미지 없음"}
+    
+    try:
+        exists = os.path.exists(image_path)
+        if exists:
+            size = os.path.getsize(image_path)
+            return {
+                "exists": True,
+                "size": size,
+                "size_kb": round(size/1024, 1),
+                "info": f"파일 존재 ({round(size/1024, 1)}KB)"
+            }
+        else:
+            return {"exists": False, "info": "파일 없음"}
+    except Exception as e:
+        return {"exists": False, "info": f"검증 실패: {e}"}
 
 def download_and_save_image_klook(image_url, product_number, city_name, image_type="main", max_size_kb=300):
     """하위 호환성을 위한 래퍼 함수"""

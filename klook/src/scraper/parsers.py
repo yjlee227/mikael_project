@@ -383,42 +383,6 @@ def get_short_highlight_content(driver):
         print(f"    ❌ 짧은 내용 수집 실패: {e}")
         return "정보 없음"
 
-def get_language_info(driver):
-    """언어 정보 수집 (원본 코드 기반)"""
-    print("  🌐 언어 정보 수집 중...")
-    
-    if not SELENIUM_AVAILABLE:
-        return "한국어 (URL 기반)"
-    
-    # 원본과 동일한 언어 셀렉터 
-    language_selectors = [
-        ".language",
-        ".guide-language",
-        "[data-testid='language']",
-        "[class*='language']",
-        "[class*='lang']",
-        ".languages li",
-        ".supported-languages li",
-        "[data-testid='languages'] li"
-    ]
-    
-    try:
-        for selector in language_selectors:
-            try:
-                element = driver.find_element(By.CSS_SELECTOR, selector)
-                language = element.text.strip()
-                if language and len(language) < 50:
-                    print(f"    ✅ 언어: {language}")
-                    return language
-            except:
-                continue
-                
-    except Exception as e:
-        print(f"    ⚠️ 언어 정보 수집 중 오류: {e}")
-    
-    # 기본값: URL 기반으로 한국어 추정
-    print("    ✅ 언어: 한국어 (URL 기반)")
-    return "한국어 (URL 기반)"
 
 def get_features(driver):
     """상품 특징 추출 (하이라이트와 구분)"""
@@ -464,71 +428,64 @@ def get_features(driver):
     print("    ⚠️ 특징 추출 실패")
     return "특징 정보 없음"
 
-def get_language(driver):
-    """KLOOK 언어 정보 수집 (원본 정교한 로직 사용)"""
-    print("  🌐 언어 정보 수집 중...")
-    
+def get_activity_attributes(driver):
+    """언어, 투어형태, 미팅방식, 소요시간을 한번에 수집"""
+    print("  활동 속성 정보 수집 중...")
     if not SELENIUM_AVAILABLE:
-        return "정보 없음"
+        return {"언어": "", "투어형태": "", "미팅방식": "", "소요시간": ""}
+    
+    attributes = {
+        "언어": "",
+        "투어형태": "",
+        "미팅방식": "",
+        "소요시간": ""
+    }
     
     try:
-        # URL에서 언어 확인 (가장 확실한 방법)
-        current_url = driver.current_url
-        if "/ko/" in current_url:
-            print("    ✅ 언어: 한국어 (URL 기반)")
-            return "한국어"
-        elif "/en/" in current_url:
-            print("    ✅ 언어: 영어 (URL 기반)")
-            return "영어"
-        elif "/ja/" in current_url:
-            print("    ✅ 언어: 일본어 (URL 기반)")
-            return "일본어"
-        elif "/zh/" in current_url:
-            print("    ✅ 언어: 중국어 (URL 기반)")
-            return "중국어"
+        # 모든 활동 속성 태그 한번에 수집
+        elements = driver.find_elements(By.CSS_SELECTOR, "#activity_attribute_tags .js-tag-content-node")
         
-        # HTML lang 속성 확인
-        try:
-            html_element = driver.find_element(By.TAG_NAME, "html")
-            lang_attr = html_element.get_attribute("lang")
-            if lang_attr:
-                if lang_attr.startswith("ko"):
-                    print(f"    ✅ 언어: 한국어 (HTML lang: {lang_attr})")
-                    return "한국어"
-                elif lang_attr.startswith("en"):
-                    print(f"    ✅ 언어: 영어 (HTML lang: {lang_attr})")
-                    return "영어"
-                elif lang_attr.startswith("ja"):
-                    print(f"    ✅ 언어: 일본어 (HTML lang: {lang_attr})")
-                    return "일본어"
-                elif lang_attr.startswith("zh"):
-                    print(f"    ✅ 언어: 중국어 (HTML lang: {lang_attr})")
-                    return "중국어"
-                else:
-                    print(f"    ✅ 언어: {lang_attr}")
-                    return lang_attr
-        except:
-            pass
-        
-        # 페이지 내용 기반 언어 감지 (백업)
-        try:
-            title_element = driver.find_element(By.TAG_NAME, "title")
-            title_text = title_element.text
+        for element in elements:
+            text = element.text.strip()
+            if not text:
+                continue
             
-            # 한글이 포함되어 있는지 확인
-            korean_chars = sum(1 for char in title_text if '\uAC00' <= char <= '\uD7A3')
-            if korean_chars > 0:
-                print("    ✅ 언어: 한국어 (내용 기반)")
-                return "한국어"
-        except:
-            pass
+            # 언어 분류
+            language_keywords = [
+                '한국어', '영어', '중국어', '일본어', '태국어', '스페인어',
+                '러시아어', '독일어', '프랑스어', '폴란드어', '네덜란드어',
+                '이탈리아어', '포르투갈리어', '베트남어', '인도네시아어'
+            ]
+            if any(keyword in text for keyword in language_keywords):
+                attributes["언어"] = text
+                print(f"    투어 언어: {text}")
+                continue
+            
+            # 소요시간 분류
+            if (('소요' in text or '일정' in text) and '시간' in text):
+                attributes["소요시간"] = text
+                print(f"    소요시간: {text}")
+                continue
+            
+            # 투어형태 분류
+            tour_type_keywords = ['조인', '그룹', '프라이빗', '개별']
+            if any(keyword in text for keyword in tour_type_keywords):
+                attributes["투어형태"] = text
+                print(f"    투어형태: {text}")
+                continue
+            
+            # 미팅방식 분류
+            meeting_keywords = ['미팅', '픽업', '집합', '만남']
+            if any(keyword in text for keyword in meeting_keywords):
+                attributes["미팅방식"] = text
+                print(f"    미팅방식: {text}")
+                continue
         
-        print("    ⚠️ 언어 정보를 확인할 수 없습니다")
-        return "한국어"  # 기본값
+        return attributes
         
     except Exception as e:
-        print(f"    ❌ 언어 정보 수집 실패: {e}")
-        return "한국어"  # 기본값
+        print(f"    활동 속성 수집 실패: {e}")
+        return attributes
 
 def get_location_tags(city_name, product_name, highlights):
     """자동 학습 시스템을 통해 위치 태그 추출"""
@@ -650,9 +607,8 @@ def clean_text(text):
 # =============================================================================
 
 def extract_all_product_data(driver, url, rank=None, city_name=None):
-    """상품 페이지에서 모든 데이터 추출 (하이라이트, 언어 정보 포함)"""
-    print(f"📊 상품 데이터 추출 시작 (순위: {rank})")
-    
+    """상품 페이지에서 모든 데이터 추출 (통합 속성 추출 방식)"""
+    print(f"상품 데이터 추출 시작 (순위: {rank})")
     try:
         # 페이지 로드 대기
         time.sleep(random.uniform(2, 4))
@@ -661,26 +617,32 @@ def extract_all_product_data(driver, url, rank=None, city_name=None):
         product_name = clean_text(get_product_name(driver))
         highlights = get_highlights(driver)
         
+        # 통합 속성 수집 (한 번의 DOM 쿼리로 4개 속성 획득)
+        activity_attrs = get_activity_attributes(driver)
+        
         product_data = {
             "상품명": product_name,
             "가격": get_price(driver),
             "평점": get_rating(driver),
             "리뷰수": get_review_count(driver),
             "카테고리": clean_text(get_categories(driver)),
-            "하이라이트": highlights,      # 🆕 원본 기능 추가
-            "위치태그": get_location_tags(city_name, product_name, highlights),  # 🆕 위치태그 추가
+            "하이라이트": highlights,
+            "위치태그": get_location_tags(city_name, product_name, highlights),
             "특징": clean_text(get_features(driver)),
-            "언어": get_language(driver),                        # 🆕 원본 기능 추가
+            "언어": activity_attrs["언어"],
+            "투어형태": activity_attrs["투어형태"],
+            "미팅방식": activity_attrs["미팅방식"],
+            "소요시간": activity_attrs["소요시간"],
             "URL": url,
             "순위": rank,
             "수집일시": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
-        print("✅ 상품 데이터 추출 완료")
+        print("상품 데이터 추출 완료")
         return product_data
         
     except Exception as e:
-        print(f"❌ 상품 데이터 추출 실패: {e}")
+        print(f"상품 데이터 추출 실패: {e}")
         return {
             "상품명": "데이터 추출 실패",
             "가격": "추출 실패",
@@ -688,8 +650,12 @@ def extract_all_product_data(driver, url, rank=None, city_name=None):
             "리뷰수": "0",
             "카테고리": "기타",
             "하이라이트": "추출 실패",
+            "위치태그": "",
             "특징": "추출 실패",
-            "언어": "한국어",
+            "언어": "",
+            "투어형태": "",
+            "미팅방식": "",
+            "소요시간": "",
             "URL": url,
             "순위": rank,
             "수집일시": datetime.now().strftime("%Y-%m-%d %H:%M:%S")

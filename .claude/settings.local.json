@@ -13,11 +13,48 @@
       "Bash(pip install:*)",
       "Bash(cp:*)",
       "Bash(/dev/null)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebSearch",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(chmod:*)",
+      "Bash(touch:*)",
+      "Bash(git:*)",
+      "Bash(zip:*)",
+      "Bash(unzip:*)",
+      "Bash(tar:*)",
+      "Bash(./venv/bin/python create_margin_calculator.py:*)",
+      "Bash(./venv/bin/python:*)"
     ],
     "deny": [],
     "additionalDirectories": [
       "/mnt/c/Users/redsk/OneDrive"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -n \"$TELEGRAM_BOT_TOKEN\" && -n \"$TELEGRAM_CHAT_ID\" ]]; then MESSAGE=\"🤖 Claude Code finished working at $(date '+%Y-%m-%d %H:%M:%S')\"; curl -s -X POST \"https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage\" -d \"chat_id=$TELEGRAM_CHAT_ID\" -d \"text=$MESSAGE\" -d \"parse_mode=HTML\" >/dev/null 2>&1 || echo \"Failed to send Telegram notification\"; else echo \"⚠️ Telegram notification skipped: Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID environment variables\"; fi"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -n \"$TELEGRAM_BOT_TOKEN\" && -n \"$TELEGRAM_CHAT_ID\" ]]; then MESSAGE=\"🎯 Claude Code subagent completed task at $(date '+%Y-%m-%d %H:%M:%S')\"; curl -s -X POST \"https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage\" -d \"chat_id=$TELEGRAM_CHAT_ID\" -d \"text=$MESSAGE\" -d \"parse_mode=HTML\" >/dev/null 2>&1 || echo \"Failed to send Telegram notification\"; else echo \"⚠️ Telegram notification skipped: Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID environment variables\"; fi"
+          }
+        ]
+      }
     ]
   }
 }

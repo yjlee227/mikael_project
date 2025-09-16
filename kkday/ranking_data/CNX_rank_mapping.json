@@ -1,0 +1,26 @@
+{
+  "https://www.kkday.com/ko/product/529284": {
+    "hash": "7bb8ce4812fd",
+    "city": "치앙마이",
+    "product_id": "529284",
+    "rankings": [
+      {
+        "rank": 1,
+        "tab": "default",
+        "added_at": "2025-09-16T10:45:10.351881"
+      }
+    ]
+  },
+  "https://www.kkday.com/ko/product/20563-chiang-mai-night-safari-ticket-thailand": {
+    "hash": "e25fba33bf26",
+    "city": "치앙마이",
+    "product_id": "20563",
+    "rankings": [
+      {
+        "rank": 2,
+        "tab": "default",
+        "added_at": "2025-09-16T10:46:16.558188"
+      }
+    ]
+  }
+}

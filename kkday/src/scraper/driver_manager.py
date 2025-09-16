@@ -131,14 +131,19 @@ def setup_driver():
         print(f"❌ 드라이버 초기화 실패: {e}")
         raise
 
-
 def go_to_main_page(driver):
-    """KKday 메인 페이지로 이동 (검색을 위한 새로운 페이지 로드)""" 
+    """KKday 메인 페이지로 이동 및 기본 처리"""
     print("KKday 메인 페이지로 이동합니다...")
     driver.get("https://www.kkday.com/ko/product/productlist/%EC%84%9C%EC%9A%B8")
-    time.sleep(random.uniform(CONFIG.get("MEDIUM_MIN_DELAY", 2), CONFIG.get("MEDIUM_MAX_DELAY", 4)))
+    time.sleep(random.uniform(2, 4)) # 페이지 로드를 위한 최소 대기
+
+    # [수정됨] 팝업 처리를 먼저 실행합니다.
+    handle_popup(driver)
+
+    # [수정됨] 팝업 처리가 끝난 후 스크롤을 실행합니다.
     print("페이지 로드 후 자연스러운 스크롤을 실행합니다.")
-    smart_scroll_selector(driver) 
+    smart_scroll_selector(driver)
+
     return True
 
 def find_and_fill_search(driver, city_name):
@@ -209,14 +214,13 @@ def click_search_button(driver):
             search_button = WebDriverWait(driver, CONFIG.get("WAIT_TIMEOUT", 10)).until(
                 EC.element_to_be_clickable((selector_type, selector_value))
             )
-            # KKday 첫 번째 클릭 
+            # KKday는 두 번 클릭 필요
             search_button.click()
-            print(f"  ✅ 검색 버튼 첫 번째 클릭 성공!")
-            time.sleep(2)  # 2초 대기 (KKday 요구사항)
+            time.sleep(2) 
+            search_button.click()
 
-            # KKday 두 번째 클릭
-            search_button.click()
-            print(f"  ✅ 검색 버튼 두 번째 클릭 성공!")
+            print(f"  ✅ 검색 버튼 클릭 성공!")    
+
             search_clicked = True
             time.sleep(random.uniform(CONFIG.get("MEDIUM_MIN_DELAY", 2), CONFIG.get("MEDIUM_MAX_DELAY", 4)))
             break
@@ -225,10 +229,60 @@ def click_search_button(driver):
 
     return search_clicked
 
+def handle_kkday_cookie_popup(driver):
+    """KKday 쿠키 팝업 자동 처리"""
+    try:
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        from selenium.common.exceptions import TimeoutException
+        import time
+        
+        print("🍪 쿠키 팝업 확인 중...")
+        
+        # 우선순위 순서로 정렬된 셀렉터
+        cookie_selectors = [
+            (By.CSS_SELECTOR, "#c-right > a"),                   # 가장 확실함
+            (By.XPATH, "/html/body/div[1]/div[2]/a"),            # Full XPath
+            (By.XPATH, "//a[contains(@onclick, 'submitConsent')]"),  # onclick 이벤트
+            (By.CSS_SELECTOR, ".c-button"),                      # 클래스 기반
+            (By.CSS_SELECTOR, "#c-right a"),                     # 약간 덜 구체적
+            (By.XPATH, "//a[text()='OK']"),                      # 텍스트 "OK"
+            (By.XPATH, "//a[contains(@class, 'c-button')]"),     # 클래스 포함
+            (By.XPATH, "//div[@id='cookiebanner']//a"),          # 쿠키배너 내 모든 링크
+            (By.XPATH, "//div[contains(@id, 'cookie')]//a"),     # cookie 포함 ID의 링크
+        ]
+        
+        for selector_type, selector_value in cookie_selectors:
+            try:
+                cookie_button = WebDriverWait(driver, 4).until(
+                    EC.element_to_be_clickable((selector_type, selector_value))
+                )
+                cookie_button.click()
+                print("✅ 쿠키 동의 완료!")
+                time.sleep(1)
+                return True
+            except TimeoutException:
+                continue
+                
+        print("ℹ️ 쿠키 팝업 없음 - 계속 진행")
+        return False
+        
+    except Exception as e:
+        print(f"⚠️ 쿠키 처리 중 오류: {e}")
+        return False
+
 def handle_popup(driver):
-    """팝업 처리"""
-    print("🔔 팝업 확인 중...")
-    
+    """팝업 처리 (쿠키 팝업 포함)"""
+    print("🔔 팝업 확인 중...")      
+    time.sleep(3)  # 3초 대기
+
+    # 먼저 쿠키 팝업 처리
+    try:                                                        
+        handle_kkday_cookie_popup(driver)
+    except Exception as e:
+        print(f"⚠️ 쿠키 팝업 처리 중 오류: {e}")
+
     popup_selectors = [
         ".modal-close",
         ".popup-close",

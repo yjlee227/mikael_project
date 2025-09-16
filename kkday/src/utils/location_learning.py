@@ -8,7 +8,7 @@ class LocationLearningSystem:
         self.current_city = city_name
 
         # KoNLPy 초기화 (조건부)
-        from kkday.src.config import KONLPY_AVAILABLE
+        from ..config import KONLPY_AVAILABLE
         if KONLPY_AVAILABLE:
             from konlpy.tag import Okt
             self.okt = Okt()
@@ -36,7 +36,7 @@ class LocationLearningSystem:
         """도시명으로부터 새로운 구조의 파일 경로 생성"""
         try:
             # config.py에서 도시 정보 가져오기
-            from kkday.src.config import get_city_info, get_city_code
+            from src.config import get_city_info, get_city_code
             
             continent, country = get_city_info(city_name)
             city_code = get_city_code(city_name)

@@ -97,19 +97,14 @@ CONFIG = {
     
     "MAX_PRODUCTS_PER_CITY": 1,     
     
-    # 동적 User-Agent 시스템 (최신 버전들)
+    # 동적 User-Agent 시스템 (최신 버전들)   
     "USER_AGENTS": [
+      # Windows
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
-    ],
+    ]
 }
-
-# 검색할 도시들 (여기서 변경!)
-CITIES_TO_SEARCH = ["서울"]
 
 # =============================================================================
 # 동적 User-Agent 선택 함수
@@ -408,6 +403,14 @@ def get_city_info(city_name):
     """통합된 도시 정보 가져오기"""
     info = UNIFIED_CITY_INFO.get(city_name)
     if info:
+        return info  # 전체 dict 반환
+    else:
+        return None
+
+def get_city_location(city_name):
+    """도시 위치 정보 가져오기 (기존 호환성 유지)"""
+    info = UNIFIED_CITY_INFO.get(city_name)
+    if info:
         return info["대륙"], info["국가"]
     else:
         return "기타", "기타"
@@ -430,7 +433,7 @@ def is_url_processed_fast(url, city_name):
     hash_file = os.path.join("hash_index", city_name, f"{url_hash}.done")
     return os.path.exists(hash_file)
 
-def mark_url_processed_fast(url, city_name, product_number=None, rank=None):
+def mark_url_processed_fast(url, city_name, product_number=None, rank=None, product_id=None):
     """해시 파일 생성으로 완료 표시"""
     if not CONFIG.get("USE_HASH_SYSTEM", True):
         return False
@@ -444,6 +447,8 @@ def mark_url_processed_fast(url, city_name, product_number=None, rank=None):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         f.write(f"URL: {url}\n")
         f.write(f"Product: {product_number}\n")
+        if product_id is not None:
+            f.write(f"ProductID: {product_id}\n")
         if rank is not None:
             f.write(f"Rank: {rank}\n")
         f.write(f"City: {city_name}\n")

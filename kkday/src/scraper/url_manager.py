@@ -132,7 +132,8 @@ def collect_urls_from_page(driver, city_name):
             ".item a[href*='/ko/product/']",        # KKday 상품 링크 (다른 컨테이너)
         ]    
         
-        found_urls = set()
+        found_urls = []      # 순서 유지를 위한 list
+        seen_urls = set()    # 중복 체크를 위한 set
         
         for selector in url_selectors:
             try:
@@ -143,7 +144,9 @@ def collect_urls_from_page(driver, city_name):
                         href = element.get_attribute("href")
                         if href and is_valid_kkday_url(href):           
                             normalized_url = normalize_kkday_url(href)  
-                            found_urls.add(normalized_url)                   
+                            if normalized_url not in seen_urls:
+                                found_urls.append(normalized_url)
+                                seen_urls.add(normalized_url)                 
                     except:
                         continue
                         
@@ -151,7 +154,7 @@ def collect_urls_from_page(driver, city_name):
                 continue
         
         print(f"  ✅ 수집된 URL: {len(found_urls)}개")
-        return list(found_urls)
+        return found_urls
         
     except Exception as e:
         print(f"  ⚠️ URL 수집 실패: {e}")
@@ -161,33 +164,37 @@ def get_pagination_urls(driver, max_pages=5):
     """페이지네이션을 통한 URL 수집"""
     print(f"📄 페이지네이션 URL 수집 중 (최대 {max_pages}페이지)...")
     
-    all_urls = set()
+    all_urls = []        # 순서 유지를 위한 list
+    seen_urls = set()    # 중복 체크를 위한 set
     current_page = 1
-    
+
     while current_page <= max_pages:
         print(f"  📄 {current_page}페이지 수집 중...")
-        
+
         # 현재 페이지에서 URL 수집
         page_urls = collect_urls_from_page(driver, "")
-        
+
         if not page_urls:
             print("  ⚠️ URL을 찾을 수 없어 수집 중단")
             break
-        
-        all_urls.update(page_urls)
-        
+
+        for url in page_urls:
+            if url not in seen_urls:
+                all_urls.append(url)
+                seen_urls.add(url)
+
         # 다음 페이지로 이동
         if current_page < max_pages:
             if not go_to_next_page(driver):
                 print("  ℹ️ 더 이상 페이지가 없음")
                 break
-        
+
         current_page += 1
         time.sleep(2)  # 페이지 로드 대기
-    
-    print(f"✅ 총 수집된 URL: {len(all_urls)}개")
-    return list(all_urls)
 
+    print(f"✅ 총 수집된 URL: {len(all_urls)}개")
+    return all_urls
+    
 def go_to_next_page(driver):
     """KKday 숫자 페이지네이션으로 다음 페이지 이동"""
     if not SELENIUM_AVAILABLE:
@@ -444,7 +451,12 @@ def execute_comprehensive_url_collection(driver, city_name, max_pages=3):
                 valid_urls.append(normalized)
         
         # 중복 제거
-        unique_urls = list(set(valid_urls))
+        unique_urls = []
+        seen_urls = set()
+        for url in valid_urls:
+            if url not in seen_urls:
+                unique_urls.append(url)
+                seen_urls.add(url)
         
         # 미처리 URL만 필터링
         unprocessed_urls = get_unprocessed_urls(unique_urls, city_name)

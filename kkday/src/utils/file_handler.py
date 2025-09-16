@@ -12,7 +12,7 @@ import hashlib
 from datetime import datetime
 from urllib.parse import urlparse
 
-from ..config import CONFIG, get_city_info, get_city_code, SELENIUM_AVAILABLE
+from ..config import CONFIG, get_city_info, get_city_code, get_city_location, SELENIUM_AVAILABLE
 
 if SELENIUM_AVAILABLE:
     from selenium.webdriver.common.by import By
@@ -26,7 +26,7 @@ def create_product_data_structure(city_name, product_number, rank=None):
     """기본 상품 데이터 구조 생성"""
     
     # 도시 정보 가져오기
-    continent, country = get_city_info(city_name)
+    continent, country = get_city_location(city_name)
     city_code = get_city_code(city_name)
     
     # 최적화된 데이터 구조 (그룹별 정리)
@@ -74,7 +74,7 @@ def create_product_data_structure(city_name, product_number, rank=None):
 def ensure_directory_structure(city_name):
     """디렉토리 구조 생성"""
     try:
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         # CSV 저장 경로 결정
         if city_name in ["마카오", "홍콩", "싱가포르"]:
@@ -86,7 +86,7 @@ def ensure_directory_structure(city_name):
         os.makedirs(csv_dir, exist_ok=True)
         
         # 이미지 디렉토리 생성 (대륙/국가/도시 구조)
-        continent, country = get_city_info(city_name) 
+        continent, country = get_city_location(city_name) 
         if city_name == country:
             # 도시국가: 대륙/국가 구조
             img_dir = os.path.join("kkday_img", continent, country)
@@ -104,7 +104,7 @@ def ensure_directory_structure(city_name):
 def is_duplicate_hash(city_name, new_hash):
     """기존 CSV에서 해시 중복 체크 (csv 모듈만 사용)"""
     try:
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
         if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
@@ -132,7 +132,7 @@ def is_duplicate_hash(city_name, new_hash):
 def save_to_csv_kkday(product_data, city_name):
     """KKday 상품 데이터를 CSV로 저장 (범용 대륙 지원)"""
     try:
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
         if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
@@ -184,7 +184,7 @@ def save_to_csv_kkday(product_data, city_name):
 def get_csv_stats(city_name):
     """CSV 파일 통계 정보 반환 (범용 대륙 지원)"""
     try:
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
         if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
@@ -234,32 +234,22 @@ def get_dual_image_urls_kkday(driver, url_type="Product"):
     main_img_url = None
     thumb_img_url = None
     
-    # 원본에서 실제 작동하는 정교한 메인 이미지 셀렉터들
+    # KKday 실제 작동하는 메인 이미지 셀렉터들 (디버깅 결과 반영)
     main_selectors = [
-        "#banner_atlas .activity-banner-image-container_left img",   # KKday 메인 이미지 (실제 작동)
-        ".activity-banner-image-container_left img",                 # 백업 1
-        ".main-image img",                                           # 일반 백업
-        ".hero-image img",                                           # 일반 백업
-        ".product-image img",                                        # 일반 백업
-        ".ActivityCardImage--image",                                 # 기존 셀렉터 (백업)
-        ".product-hero-image img",                                   # 상세 페이지 메인 (백업)
+        "img[src*='product'][src*='c_fill%2Ch_600']",               # 메인 이미지 (600px 높이)
+        "img[src*='kkday'][src*='product'][src*='h_600']",          # KKday 메인 상품 이미지
+        "img[class*='image'][src*='product']:first-of-type",       # 첫 번째 상품 이미지
+        "img[src*='product']:first-of-type",                       # 첫 번째 product 이미지
+        "img[src*='kkday'][src*='product']:first-of-type"          # 첫 번째 KKday 상품 이미지
     ]
     
-    # 원본에서 실제 작동하는 정교한 썸네일 이미지 셀렉터들
+    # KKday 실제 작동하는 썸네일 이미지 셀렉터들 (디버깅 결과 반영)
     thumb_selectors = [
-        "#banner_atlas .activity-banner-image-container_right img",  # KKday 썸네일 이미지
-        ".activity-banner-image-container_right img",                # 백업 1
-        ".product-gallery img:nth-child(2)",                        # 일반 백업
-        ".gallery img:nth-child(2)",                                # 일반 백업
-        ".slider img:nth-child(2)",                                 # 일반 백업
-        ".Gallery-module--thumbnails img",                          # 갤러리 썸네일 (새 구조)
-        ".gallery-thumbnails img",                                  # 갤러리 썸네일
-        "[data-testid='gallery-thumbnail'] img",                   # 테스트ID 기반
-        ".thumbnail img",                                           # 일반 썸네일
-        ".swiper-slide img",                                        # 스와이퍼 슬라이드 내 이미지
-        ".image-gallery-thumbnails img",                            # 이미지 갤러리 썸네일
-        ".product-gallery-thumb img",                               # 상품 갤러리 썸네일
-        ".slider-thumb img",                                        # 슬라이더 썸네일
+        "img[src*='product'][src*='c_fill%2Ch_300']",               # 썸네일 이미지 (300px 높이)
+        "img[src*='kkday'][src*='product'][src*='h_300']",          # KKday 썸네일 상품 이미지
+        "img[class*='image'][src*='product']:nth-of-type(2)",      # 두 번째 상품 이미지
+        "img[src*='product']:nth-of-type(2)",                      # 두 번째 product 이미지
+        "img[src*='kkday'][src*='product']:nth-of-type(2)"         # 두 번째 KKday 상품 이미지
     ]
     
     def try_get_image_url(selectors):
@@ -310,11 +300,11 @@ def download_single_image_kkday(img_src, product_number, city_name, image_type="
             img_filename = f"{city_code}_{product_number:04d}_thumb.jpg"  # KMJ_0001_thumb.jpg
         
         # 이미지 폴더 경로 - 원본 코드와 동일
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         img_base_folder = os.path.join(os.getcwd(), "kkday_img")
 
         # 폴더 구조 (범용적으로 수정)
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         if city_name == country:
             # 도시국가: 대륙/국가 구조 (도시 폴더 생략)
             img_folder = os.path.join(img_base_folder, continent, country)
@@ -331,8 +321,9 @@ def download_single_image_kkday(img_src, product_number, city_name, image_type="
             'Referer': 'https://www.kkday.com/ko',
             'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8'
         }
-               
-        response = requests.get(img_src, headers=headers, timeout=10)
+
+        # verify=False를 추가하여 SSL 인증서 검증을 건너뜁니다.       
+        response = requests.get(img_src, headers=headers, timeout=10, verify=False)
         response.raise_for_status()
         
         # 임시 파일에 저장
@@ -467,7 +458,7 @@ def get_smart_image_path(city_name, product_number, image_type="main"):
         
         # 도시 정보 및 파일명 생성
         city_code = get_city_code(city_name)
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         if image_type == "main":
             filename = f"{city_code}_{product_number:04d}.jpg"
@@ -589,7 +580,7 @@ def format_price_data(price_text):
 def get_last_product_number(city_name):
     """기존 CSV에서 마지막 상품 번호 확인 (범용 대륙 지원)"""
     try:
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         # CSV 파일 경로 결정 (도시국가는 통합 파일명 사용)
         if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:
@@ -801,7 +792,7 @@ def create_country_consolidated_csv(country_name, force_recreate=False):
 def auto_create_country_csv_after_crawling(city_name):
     """크롤링 완료 후 자동으로 국가별 통합 CSV 생성 (도시국가 제외)"""
     try:
-        continent, country = get_city_info(city_name)
+        continent, country = get_city_location(city_name)
         
         # 도시국가는 통합 CSV 생성 불필요
         if city_name in ["홍콩", "싱가포르", "마카오", "괌"]:

@@ -571,12 +571,26 @@ def clean_text(text):
 # =============================================================================
 
 def extract_all_product_data(driver, url, rank=None, city_name=None):
-    """상품 페이지에서 모든 데이터 추출 (안정화 버전)"""
+    """상품 페이지에서 모든 데이터 추출 (최종 개선 버전)"""  
     print(f"상품 데이터 추출 시작 (순위: {rank})")
+    
+    # --- 상품번호 추출 로직 (조건부 로그 적용) ---
+    product_id = "ID 없음"
+    try:
+        product_id_match = re.search(r"/product/(\d+)", url)
+        if product_id_match:
+            product_id = product_id_match.group(1)
+            print(f"  🆔 상품번호 추출 성공: {product_id}")
+        else:
+            print(f"  ⚠️ 상품번호 추출 실패: URL에서 패턴을 찾을 수 없습니다.")
+    except Exception as e:
+        print(f"  ❌ 상품번호 추출 중 오류 발생: {e}")
+    # -----------------------------------------
+    
     try:
         # 페이지 로드 대기
         time.sleep(random.uniform(2, 4))
-           
+        
         # 각 데이터 추출
         product_name = clean_text(get_product_name(driver))
         highlights = get_highlights(driver)
@@ -585,6 +599,7 @@ def extract_all_product_data(driver, url, rank=None, city_name=None):
         activity_attrs = get_activity_attributes(driver)
         
         product_data = {
+            "상품번호": product_id,
             "상품명": product_name,
             "가격": get_price(driver),
             "평점": get_rating(driver),
@@ -607,7 +622,9 @@ def extract_all_product_data(driver, url, rank=None, city_name=None):
         
     except Exception as e:
         print(f"상품 데이터 추출 실패: {e}")
+        # 실패 시에도 상품번호는 이미 추출했으므로 그대로 사용
         return {
+            "상품번호": product_id,  # 이미 추출된 ID를 사용
             "상품명": "데이터 추출 실패",
             "가격": "추출 실패",
             "평점": "추출 실패",

@@ -13,7 +13,7 @@ from datetime import datetime
 from ..config import CONFIG, SELENIUM_AVAILABLE
 from ..utils.file_handler import create_product_data_structure, save_to_csv_kkday, get_dual_image_urls_kkday, download_and_save_image_kkday, ensure_directory_structure
 from .driver_manager import setup_driver, go_to_main_page, find_and_fill_search, click_search_button, handle_kkday_cookie_popup, handle_popup, smart_scroll_selector
-from .url_manager import collect_urls_from_page, get_pagination_urls, is_url_already_processed, mark_url_as_processed
+from .url_manager import collect_urls_from_page, get_pagination_urls, is_url_already_processed, mark_url_as_processed, go_to_next_page
 from .parsers import extract_all_product_data, validate_product_data
 from .ranking import save_url_with_rank, get_next_start_rank
 from . import human_scroll_patterns

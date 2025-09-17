@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행상품 비교 시스템 통합 프로젝트 계획서</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; }
+        h3 { color: #2980b9; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        code { background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        pre { background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .emoji { font-size: 1.2em; }
+        @media print {
+            body { font-size: 12px; }
+            h1 { font-size: 18px; }
+            h2 { font-size: 16px; }
+            h3 { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚀 여행상품 비교 시스템 통합 프로젝트 계획서</h1>
+<h2>Complete Development & Deployment Roadmap</h2>
+
+<hr>
+
+<h2>📋 프로젝트 개요</h2>
+
+<p><strong>목표</strong>: 3개 플랫폼(MyRealTrip, KLOOK, KKday) 데이터를 활용한 여행상품 비교 웹 서비스 구축 및 배포</p>
+
+<p><strong>현재 상태</strong>: 크롤링 시스템 완성, 데이터 수집 준비 완료<br>
+<strong>최종 목표</strong>: 6주 내 완전한 여행상품 비교 서비스 런칭</p>
+
+<p><strong>예상 총 작업시간</strong>: 230시간 (6주)<br>
+<strong>예상 운영비용</strong>: $20/월</p>
+
+<hr>
+
+<h2>🔥 Phase 1: 데이터 기반 구축 (2-3주, 80시간)</h2>
+
+<h3>📊 Week 1: 데이터 수집 & 분석 (40시간)</h3>
+
+<h4><strong>Day 1-2: 데이터 수집 전략 수립 및 실행</strong></h4>
+
+<table>
+<tr>
+<th>작업</th>
+<th>상세 설명</th>
+<th>사용 도구</th>
+<th>산출물</th>
+<th>시간</th>
+</tr>
+<tr>
+<td>대상 상품 선정</td>
+<td>비교할 도시, 카테고리 기준 확정</td>
+<td>웹 브라우저</td>
+<td>기준 정의서 (Markdown)</td>
+<td>4시간</td>
+</tr>
+<tr>
+<td>URL 수집</td>
+<td>기준에 맞는 상품 URL 30개 수집</td>
+<td>웹 브라우저</td>
+<td>data/target_urls.json</td>
+<td>4시간</td>
+</tr>
+<tr>
+<td>데이터 수집 실행</td>
+<td>3개 플랫폼에서 도쿄 상품 각 10개 수집</td>
+<td>KKday/KLOOK/MyRealTrip 크롤러</td>
+<td>플랫폼별 CSV 파일</td>
+<td>8시간</td>
+</tr>
+</table>
+
+<pre>
+✅ 수집 목표 데이터:
+├── MyRealTrip: 도쿄 10개 상품
+├── KLOOK: 도쿄 10개 상품
+└── KKday: 도쿄 10개 상품
+
+수집 데이터 형식:
+- CSV 파일 (각 플랫폼별)
+- 이미지 파일
+- 메타데이터
+</pre>
+
+<h4><strong>Day 3-4: 데이터 분석 및 시각화 (16시간)</strong></h4>
+
+<pre><code class="language-python"># 1. 데이터 품질 분석 스크립트
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def analyze_data_quality():
+    # 컬럼 완성도 체크
+    # 누락 데이터 식별
+    # 데이터 타입 검증
+
+    # 2. 시각화 생성
+    plt.figure(figsize=(12, 8))
+    # 가격 비교 막대 그래프
+    # 플랫폼별 평점 분포
+    # 카테고리별 상품 수
+    # 누락 데이터 히트맵
+
+    # 3. 비교 가능성 분석
+    # 동일 상품 매칭률 계산
+    # 가격 분산 분석
+    # 플랫폼별 강점 분석
+</code></pre>
+
+<table>
+<tr>
+<th>작업</th>
+<th>상세 설명</th>
+<th>산출물</th>
+<th>시간</th>
+</tr>
+<tr>
+<td>데이터 정제</td>
+<td>수집된 데이터 표준화 및 정제</td>
+<td>data/processed/cleaned_data.csv</td>
+<td>8시간</td>
+</tr>
+<tr>
+<td>분석 리포트 작성</td>
+<td>비교 분석표, 시각화 차트 포함</td>
+<td>reports/comparison_report_v1.md</td>
+<td>8시간</td>
+</tr>
+</table>
+
+<h2>🎯 단계별 핵심 마일스톤</h2>
+
+<table>
+<tr>
+<th>Week</th>
+<th>핵심 목표</th>
+<th>성공 지표</th>
+<th>예상 소요시간</th>
+</tr>
+<tr>
+<td>1</td>
+<td>데이터 검증</td>
+<td>30개 상품 매칭 80% 성공</td>
+<td>40시간</td>
+</tr>
+<tr>
+<td>2-3</td>
+<td>API 완성</td>
+<td>응답시간 < 1초</td>
+<td>60시간</td>
+</tr>
+<tr>
+<td>4-5</td>
+<td>웹사이트 완성</td>
+<td>모든 기능 정상 작동</td>
+<td>80시간</td>
+</tr>
+<tr>
+<td>6</td>
+<td>자동화</td>
+<td>24시간 무중단 운영</td>
+<td>30시간</td>
+</tr>
+<tr>
+<td>7</td>
+<td>MVP 출시</td>
+<td>실제 사용자 접속</td>
+<td>20시간</td>
+</tr>
+</table>
+
+<p><strong>총 예상 작업시간: 230시간 (6주)</strong></p>
+
+<hr>
+
+<h2>📊 최종 결과물</h2>
+
+<h3>🎯 완성된 시스템</h3>
+<ol>
+<li><strong>데이터</strong>: 3개 플랫폼 × 10개 도시 × 평균 50개 상품 = 1,500개 상품</li>
+<li><strong>API</strong>: 초당 100+ 요청 처리 가능</li>
+<li><strong>웹사이트</strong>: 모바일/데스크톱 최적화</li>
+<li><strong>자동화</strong>: 매일 자동 데이터 업데이트</li>
+</ol>
+
+<h3>💰 운영 비용 (월)</h3>
+<ul>
+<li>데이터베이스: $15 (Railway PostgreSQL)</li>
+<li>API 서버: $5 (Railway Hobby)</li>
+<li>프론트엔드: $0 (Vercel Free)</li>
+<li><strong>총합: $20/월</strong></li>
+</ul>
+
+<h3>📊 예상 성과</h3>
+<ul>
+<li><strong>사용자</strong>: 월 1,000+ 방문자</li>
+<li><strong>절약 금액</strong>: 사용자당 평균 15,000원</li>
+<li><strong>매칭 정확도</strong>: 90%+</li>
+<li><strong>응답 속도</strong>: 평균 500ms 이하</li>
+</ul>
+
+<hr>
+
+<p><strong>문서 버전</strong>: v2.0 (통합)<br>
+<strong>생성일</strong>: 2025-09-17<br>
+<strong>최종 업데이트</strong>: 2025-09-17<br>
+<strong>작성자</strong>: AI Assistant + 사용자 요구사항 반영</p>
+
+<p style="text-align: center; margin-top: 50px; color: #666;">
+    <em>이 통합 로드맵대로 진행하면 6주 안에 완전한 여행상품 비교 서비스를 런칭할 수 있습니다! 🎉</em>
+</p>
+
+</body>
+</html>

@@ -83,13 +83,14 @@ class KKdayCrawler:
             return False
 
     def collect_urls(self, max_pages=3, max_products=None):
-        """URL 수집 (효율화 버전: max_products에 도달하면 중단)"""
+        """URL 수집 (KLOOK 방식 업그레이드: 메타데이터 포함)"""
         print(f"🔗 URL 수집 시작 (최대 {max_pages}페이지, 목표 상품: {max_products or '제한 없음'})")
         time.sleep(random.uniform(2, 4))
 
-        all_product_urls = []
+        all_product_urls = []  # KLOOK 방식: 메타데이터 포함 딕셔너리 리스트
         seen_urls = set()
         current_page = 1
+        current_rank = 1  # 순위 추적
 
         try:
             while current_page <= max_pages:
@@ -100,15 +101,28 @@ class KKdayCrawler:
                 if not page_urls:
                     print("  ⚠️ 현재 페이지에서 URL을 찾을 수 없어 수집 중단")
                     break
-                
+
                 # 상품 URL만 필터링
                 product_urls_on_page = self.filter_product_detail_urls(page_urls)
 
-                # 새로운 상품 URL만 추가
+                # KLOOK 방식: 메타데이터와 함께 URL 추가
+                page_index = 1
                 for url in product_urls_on_page:
                     if url not in seen_urls:
-                        all_product_urls.append(url)
+                        # KLOOK 스타일 URL 엔트리 생성
+                        url_entry = {
+                            "rank": current_rank,
+                            "url": url,
+                            "page": current_page,
+                            "page_index": page_index,
+                            "collected_at": datetime.now().isoformat(),
+                            "is_duplicate": False
+                        }
+
+                        all_product_urls.append(url_entry)
                         seen_urls.add(url)
+                        current_rank += 1
+                        page_index += 1
 
                 # 목표 상품 수에 도달했는지 확인
                 if max_products and len(all_product_urls) >= max_products:
@@ -120,16 +134,44 @@ class KKdayCrawler:
                     if not go_to_next_page(self.driver):
                         print("  ℹ️ 더 이상 다음 페이지가 없어 수집을 중단합니다.")
                         break
-                
+
                 current_page += 1
                 # 페이지 로드 대기
                 time.sleep(random.uniform(2, 5))
 
-            # 미처리 URL 필터링
+            # KLOOK 방식: 데이터 영속성 시스템으로 저장
+            from ..utils.data_persistence import KKdayDataPersistence
+
+            # 수집 메타데이터 준비
+            collection_info = {
+                "target_products": max_products or len(all_product_urls),
+                "max_pages": max_pages,
+                "pages_processed": current_page - 1
+            }
+
+            # JSON 형태로 저장
+            persistence = KKdayDataPersistence()
+            persistence.save_url_collection_data(
+                city_name=self.city_name,
+                tab="전체",
+                url_data=all_product_urls,
+                collection_info=collection_info
+            )
+
+            # Stage 1 상태 저장
+            stage1_data = {
+                "status": "success",
+                "url_count": len(all_product_urls),
+                "new_count": len(all_product_urls)
+            }
+            persistence.save_status_data(self.city_name, "전체", stage1_data=stage1_data)
+
+            # 미처리 URL 필터링 (기존 호환성 유지)
             unprocessed_urls = []
-            for url in all_product_urls:
+            for url_entry in all_product_urls:
+                url = url_entry["url"]
                 if not is_url_already_processed(url, self.city_name):
-                    unprocessed_urls.append(url)
+                    unprocessed_urls.append(url)  # 기존 호환성을 위해 URL만 반환
 
             self.stats["urls_collected"] = len(all_product_urls)
             print(f"✅ URL 수집 완료: 총 {len(all_product_urls)}개 상품 URL, 미처리 {len(unprocessed_urls)}개")
@@ -217,6 +259,15 @@ class KKdayCrawler:
             # 기본 구조에 맞춰 데이터 병합
             base_data = create_product_data_structure(self.city_name, self.stats["total_processed"] + 1, rank)
             base_data.update(product_data)
+
+            # 추가 필드 설정 (표준 30개 컬럼 지원)
+            if "카테고리" in product_data:
+                # 카테고리에서 마지막 부분을 분류로 사용
+                category = product_data.get("카테고리", "")
+                base_data["분류"] = category.split(" > ")[-1] if category else ""
+
+            # 제휴링크는 향후 KKDAY 제휴 프로그램 설정 후 추가 예정
+            base_data["제휴링크"] = ""
             
             # 이미지 처리
             try:
@@ -236,6 +287,13 @@ class KKdayCrawler:
                             image_type="main"
                         )
                         base_data["메인이미지"] = main_img_filename if main_img_filename else "다운로드 실패"
+
+                        # 전체 경로도 함께 저장
+                        if main_img_filename:
+                            from ..utils.file_handler import get_smart_image_path
+                            main_img_path = get_smart_image_path(self.city_name, image_identifier, "main")
+                            base_data["메인이미지_경로"] = main_img_path
+
                         time.sleep(random.uniform(1, 2))
 
                     else:
@@ -251,6 +309,13 @@ class KKdayCrawler:
                             image_type="thumb"
                         )
                         base_data["썸네일이미지"] = thumb_img_filename if thumb_img_filename else "다운로드 실패"
+
+                        # 전체 경로도 함께 저장
+                        if thumb_img_filename:
+                            from ..utils.file_handler import get_smart_image_path
+                            thumb_img_path = get_smart_image_path(self.city_name, image_identifier, "thumb")
+                            base_data["썸네일이미지_경로"] = thumb_img_path
+
                         time.sleep(random.uniform(1, 2))
                     else:
                         base_data["썸네일이미지"] = thumb_img_url
@@ -283,36 +348,64 @@ class KKdayCrawler:
         finally:
             self.stats["total_processed"] += 1
     
+    def load_urls_from_json(self, tab="전체"):
+        """JSON 파일에서 URL 로드 (KLOOK 방식 호환)"""
+        try:
+            from ..utils.data_persistence import KKdayDataPersistence
+            persistence = KKdayDataPersistence()
+
+            # JSON 데이터에서 URL 추출
+            urls = persistence.get_urls_for_stage2(self.city_name, tab)
+
+            if urls:
+                print(f"✅ JSON에서 {len(urls)}개 URL 로드 완료")
+                return urls
+            else:
+                print("⚠️ JSON 파일에서 URL을 찾을 수 없습니다")
+                return []
+
+        except Exception as e:
+            print(f"❌ JSON URL 로드 실패: {e}")
+            return []
+
     def crawl_products_batch(self, urls):
-        """배치 상품 크롤링"""
+        """배치 상품 크롤링 (JSON/TXT 호환)"""
+        # Stage 2 상태 초기화
+        from ..utils.data_persistence import KKdayDataPersistence
+        persistence = KKdayDataPersistence()
+
         # 시작 순위 자동 계산
         start_rank = self.get_next_available_rank()
         print(f"📦 배치 크롤링 시작: {len(urls)}개 상품 (시작 순위: {start_rank})")
 
         current_rank = start_rank
+        stage2_success = True
 
-        for i, url in enumerate(urls):
-            time.sleep(random.uniform(2, 4))
-            print(f"\n{'='*50}")
-            print(f"진행률: {i+1}/{len(urls)} ({((i+1)/len(urls)*100):.1f}%)")
+        try:
+            for i, url in enumerate(urls):
+                time.sleep(random.uniform(2, 4))
+                print(f"\n{'='*50}")
+                print(f"진행률: {i+1}/{len(urls)} ({((i+1)/len(urls)*100):.1f}%)")
 
-            # 이미 처리된 URL인지 확인
-            if is_url_already_processed(url, self.city_name):
-                print(f"⏭️ 이미 처리된 URL, 건너뜀")
-                self.stats["skip_count"] += 1
-                continue
+                # 이미 처리된 URL인지 확인
+                if is_url_already_processed(url, self.city_name):
+                    print(f"⏭️ 이미 처리된 URL, 건너뜀")
+                    self.stats["skip_count"] += 1
+                    continue
 
-            # 상품 크롤링
-            success = self.crawl_product(url, current_rank)
+                # 상품 크롤링
+                success = self.crawl_product(url, current_rank)
 
-            if success:
-                current_rank += 1
+                if success:
+                    current_rank += 1
+                else:
+                    stage2_success = False
 
-            # 진행상황 출력
-            self.print_progress()
+                # 진행상황 출력
+                self.print_progress()
 
-            # 자연스러운 대기
-            delay = random.uniform(
+                # 자연스러운 대기
+                delay = random.uniform(
                 CONFIG.get("MEDIUM_MIN_DELAY", 3),
                 CONFIG.get("MEDIUM_MAX_DELAY", 8)
             )
@@ -328,8 +421,35 @@ class KKdayCrawler:
                 print(f"😴 긴 휴식: {long_delay:.1f}초...")
                 time.sleep(long_delay)
 
-        print("\n📦 배치 크롤링 완료")
-        return True
+            # Stage 2 완료 상태 저장
+            stage2_data = {
+                "status": "success" if stage2_success else "partial",
+                "data": {
+                    "total_processed": self.stats["total_processed"],
+                    "success_count": self.stats["success_count"],
+                    "error_count": self.stats["error_count"],
+                    "skip_count": self.stats["skip_count"]
+                }
+            }
+            persistence.save_status_data(self.city_name, "전체", stage2_data=stage2_data)
+
+            print("\n📦 배치 크롤링 완료")
+            print(f"✅ Stage 2 상태 저장: {'성공' if stage2_success else '부분 성공'}")
+            return True
+
+        except Exception as e:
+            print(f"❌ 배치 크롤링 중 오류: {e}")
+            # 실패 상태 저장
+            stage2_data = {
+                "status": "failed",
+                "data": {
+                    "error": str(e),
+                    "total_processed": self.stats.get("total_processed", 0),
+                    "success_count": self.stats.get("success_count", 0)
+                }
+            }
+            persistence.save_status_data(self.city_name, "전체", stage2_data=stage2_data)
+            return False
 
     def run_full_crawling(self, max_pages=3, max_products=None):
         """전체 크롤링 실행"""

@@ -32,7 +32,8 @@
       "Bash(export TELEGRAM_BOT_TOKEN=\"dummy\")",
       "Bash(export TELEGRAM_CHAT_ID=\"dummy\")",
       "Bash(npm:*)",
-      "Bash(echo $PATH)"
+      "Bash(echo $PATH)",
+      "Read(//mnt/c/Users/redsk/OneDrive/デス크トップ/mikael_project/**)"
     ],
     "deny": [],
     "additionalDirectories": [

@@ -1,0 +1,19 @@
+{
+  "city": "삿포로",
+  "tab": "전체",
+  "stage1": {
+    "status": "success",
+    "timestamp": "2025-09-20T21:10:53.423200",
+    "data": {
+      "url_count": 50,
+      "file_path": "klook_urls_data_삿포로_전체.json",
+      "new_count": 40
+    }
+  },
+  "stage2": {
+    "status": "pending",
+    "timestamp": null,
+    "data": null
+  },
+  "last_updated": "2025-09-20T21:10:53.423200"
+}

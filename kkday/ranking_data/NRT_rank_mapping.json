@@ -1,0 +1,26 @@
+{
+  "https://www.kkday.com/ko/product/10999-tokyo-mount-fuji-lake-kawaguchi-gotemba-tour-japan": {
+    "hash": "a4095a14df23",
+    "city": "도쿄",
+    "product_id": "10999",
+    "rankings": [
+      {
+        "rank": 1,
+        "tab": "default",
+        "added_at": "2025-09-21T15:34:38.069111"
+      }
+    ]
+  },
+  "https://www.kkday.com/ko/product/12060-nikko-day-tour-from-tokyo-unesco-world-heritage-sites-and-more-japan": {
+    "hash": "ed6ddf1cefd9",
+    "city": "도쿄",
+    "product_id": "12060",
+    "rankings": [
+      {
+        "rank": 2,
+        "tab": "default",
+        "added_at": "2025-09-21T15:35:39.476823"
+      }
+    ]
+  }
+}

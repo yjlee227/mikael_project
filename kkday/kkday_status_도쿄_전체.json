@@ -1,0 +1,25 @@
+{
+  "city": "도쿄",
+  "tab": "전체",
+  "platform": "kkday",
+  "stage1": {
+    "status": "success",
+    "timestamp": "2025-09-21T15:32:42.027887",
+    "data": {
+      "url_count": 10,
+      "file_path": "kkday_urls_data_도쿄_전체.json",
+      "new_count": 10
+    }
+  },
+  "stage2": {
+    "status": "success",
+    "timestamp": "2025-09-21T15:35:53.937724",
+    "data": {
+      "total_processed": 2,
+      "success_count": 2,
+      "error_count": 0,
+      "skip_count": 0
+    }
+  },
+  "last_updated": "2025-09-21T15:35:53.937724"
+}

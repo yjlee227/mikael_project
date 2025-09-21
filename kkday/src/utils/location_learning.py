@@ -37,8 +37,10 @@ class LocationLearningSystem:
         try:
             # config.py에서 도시 정보 가져오기
             from src.config import get_city_info, get_city_code
-            
-            continent, country = get_city_info(city_name)
+
+            city_info = get_city_info(city_name)
+            continent = city_info["대륙"]
+            country = city_info["국가"]
             city_code = get_city_code(city_name)
             
             # 대륙/국가/도시코드_keywords.json
